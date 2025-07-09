@@ -27,5 +27,14 @@
         "https://sd-style-images.wall-breaker-no4.xyz/home_page/noobai-XL-Vpred-1.0/15.webp",
         "https://sd-style-images.wall-breaker-no4.xyz/home_page/noobai-XL-Vpred-1.0/16.webp",
         "https://sd-style-images.wall-breaker-no4.xyz/home_page/noobai-XL-Vpred-1.0/17.webp"
+    ],
+    "prompt_order": [
+        "Gender tags",
+        "Character(s) tags",
+        "Series tags",
+        "Rating tags",
+        "Style tags",
+        "General tags",
+        "Qulity tags"
     ]
 }

@@ -15,5 +15,14 @@
         "https://sd-style-images.wall-breaker-no4.xyz/home_page/animagine-xl-4.0/3.webp",
         "https://sd-style-images.wall-breaker-no4.xyz/home_page/animagine-xl-4.0/4.webp",
         "https://sd-style-images.wall-breaker-no4.xyz/home_page/animagine-xl-4.0/5.webp"
+    ],
+    "prompt_order": [
+        "Gender tags",
+        "Character(s) tags",
+        "Series tags",
+        "Rating tags",
+        "Style tags",
+        "General tags",
+        "Qulity tags"
     ]
 }
