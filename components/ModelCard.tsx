@@ -26,7 +26,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Separator } from "@/components/ui/separator"
+import { Separator } from "@/components/ui/separator";
 
 interface ModelInfo {
   title: string;
@@ -48,47 +48,50 @@ interface ModelCardProps {
 export function ModelCard({ model }: ModelCardProps) {
   return (
     <Card key={model.model_name} className="flex flex-col">
-      <div className="flex flex-col flex-grow">
-        <CardHeader>
-          <div className="aspect-video relative w-full">
-            <Image
-              src={model.cover_image}
-              alt={`Cover image for ${model.title}`}
-              fill
-              className="object-cover rounded-t-lg"
-              sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            />
-          </div>
-          <CardTitle className="pt-4">{model.title}</CardTitle>
-          <Badge variant="secondary" className="w-fit mt-1">
-            {model.model_name}
-          </Badge>
-          <div className="pt-2">
-            <p className="line-clamp-3 text-sm text-muted-foreground">
-              {model.description.zh_CN}
-            </p>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button
-                  variant="link"
-                  size="sm"
-                  className="h-auto p-0 text-xs"
-                >
-                  查看详情
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[625px]">
-                <DialogHeader>
-                  <DialogTitle>{model.title}</DialogTitle>
-                  <DialogDescription className="whitespace-pre-wrap max-h-[70vh] overflow-y-auto">
-                    {model.description.zh_CN}
-                  </DialogDescription>
-                </DialogHeader>
-              </DialogContent>
-            </Dialog>
-          </div>
-          <Separator className="mt-4" />
-        </CardHeader>
+      <CardHeader>
+        <div className="aspect-video relative w-full">
+          <Image
+            src={model.cover_image}
+            alt={`Cover image for ${model.title}`}
+            fill
+            className="object-cover rounded-t-lg"
+            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          />
+        </div>
+        <CardTitle className="pt-4">{model.title}</CardTitle>
+        <Badge variant="secondary" className="w-fit mt-1">
+          {model.model_name}
+        </Badge>
+        <div className="pt-2">
+          <p className="line-clamp-3 text-sm text-muted-foreground">
+            {model.description.zh_CN}
+          </p>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+                variant="link"
+                size="sm"
+                className="h-auto p-0 text-xs"
+              >
+                查看详情
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[625px]">
+              <DialogHeader>
+                <DialogTitle>{model.title}</DialogTitle>
+                <DialogDescription className="whitespace-pre-wrap max-h-[70vh] overflow-y-auto">
+                  {model.description.zh_CN}
+                </DialogDescription>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </CardHeader>
+
+      <div className="mt-auto">
+        <div className="px-6">
+          <Separator />
+        </div>
         <CardContent className="pt-4">
           {model.sample_images && model.sample_images.length > 0 && (
             <Carousel
@@ -103,7 +106,8 @@ export function ModelCard({ model }: ModelCardProps) {
                     <div className="aspect-[3/4] relative">
                       <Image
                         src={img}
-                        alt={`Sample image ${index + 1} for ${model.title}`}
+                        alt={`Sample image ${index + 1} for ${model.title
+                          }`}
                         fill
                         className="object-cover rounded-md"
                         sizes="15vw"
