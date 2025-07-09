@@ -163,6 +163,7 @@ export function ModelCard({ model }: ModelCardProps) {
                   alt="Hugging Face"
                   width={16}
                   height={16}
+                  unoptimized
                 />
                 <span>Hugging Face</span>
               </a>
@@ -181,6 +182,7 @@ export function ModelCard({ model }: ModelCardProps) {
                   alt="Civitai"
                   width={16}
                   height={16}
+                  unoptimized
                 />
                 <span>Civitai</span>
               </a>
