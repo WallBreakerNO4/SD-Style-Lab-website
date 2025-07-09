@@ -1,0 +1,125 @@
+"use client";
+
+import Image from "next/image";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+interface ModelInfo {
+  title: string;
+  model_name: string;
+  description: {
+    en_US: string;
+    zh_CN: string;
+  };
+  huggingface_url?: string;
+  civitai_url?: string;
+  cover_image: string;
+  sample_images: string[];
+}
+
+interface ModelCardProps {
+  model: ModelInfo;
+}
+
+export function ModelCard({ model }: ModelCardProps) {
+  return (
+    <Card key={model.model_name} className="flex flex-col">
+      <CardHeader>
+        <div className="aspect-video relative w-full">
+          <Image
+            src={model.cover_image}
+            alt={`Cover image for ${model.title}`}
+            fill
+            className="object-cover rounded-t-lg"
+            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          />
+        </div>
+        <CardTitle className="pt-4">{model.title}</CardTitle>
+        <Badge variant="secondary" className="w-fit mt-1">
+          {model.model_name}
+        </Badge>
+        <div className="pt-2">
+          <p className="line-clamp-3 text-sm text-muted-foreground">
+            {model.description.zh_CN}
+          </p>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+                variant="link"
+                size="sm"
+                className="h-auto p-0 text-xs"
+              >
+                查看详情
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[625px]">
+              <DialogHeader>
+                <DialogTitle>{model.title}</DialogTitle>
+                <DialogDescription className="whitespace-pre-wrap max-h-[70vh] overflow-y-auto">
+                  {model.description.zh_CN}
+                </DialogDescription>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </CardHeader>
+      <CardContent className="flex-grow">
+        {model.sample_images && model.sample_images.length > 0 && (
+          <div className="grid grid-cols-3 gap-2">
+            {model.sample_images.slice(0, 6).map((img, index) => (
+              <div key={index} className="aspect-square relative">
+                <Image
+                  src={img}
+                  alt={`Sample image ${index + 1} for ${model.title}`}
+                  fill
+                  className="object-cover rounded-md"
+                  sizes="10vw"
+                />
+              </div>
+            ))}
+          </div>
+        )}
+      </CardContent>
+      <CardFooter className="flex justify-end gap-2 pt-4">
+        {model.huggingface_url && (
+          <Button asChild variant="outline" size="sm">
+            <a
+              href={model.huggingface_url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Hugging Face
+            </a>
+          </Button>
+        )}
+        {model.civitai_url && (
+          <Button asChild variant="outline" size="sm">
+            <a
+              href={model.civitai_url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Civitai
+            </a>
+          </Button>
+        )}
+      </CardFooter>
+    </Card>
+  );
+}

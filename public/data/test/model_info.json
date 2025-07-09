@@ -7,10 +7,13 @@
     },
     "huggingface_url": "https://huggingface.co/test/test-1",
     "civitai_url": "https://civitai.com/models/test/test-1",
-    "cover_image": "https://sd-style-images.wall-breaker-no4.xyz/home_page/test-1/cover.webp",
+    "cover_image": "https://sd-style-images.wall-breaker-no4.xyz/home_page/animagine-xl-4.0/cover.webp",
     "sample_images": [
-        "https://sd-style-images.wall-breaker-no4.xyz/home_page/test-1/0.webp",
-        "https://sd-style-images.wall-breaker-no4.xyz/home_page/test-1/1.webp",
-        "https://sd-style-images.wall-breaker-no4.xyz/home_page/test-1/2.webp"
+        "https://sd-style-images.wall-breaker-no4.xyz/home_page/animagine-xl-4.0/0.webp",
+        "https://sd-style-images.wall-breaker-no4.xyz/home_page/animagine-xl-4.0/1.webp",
+        "https://sd-style-images.wall-breaker-no4.xyz/home_page/animagine-xl-4.0/2.webp",
+        "https://sd-style-images.wall-breaker-no4.xyz/home_page/animagine-xl-4.0/3.webp",
+        "https://sd-style-images.wall-breaker-no4.xyz/home_page/animagine-xl-4.0/4.webp",
+        "https://sd-style-images.wall-breaker-no4.xyz/home_page/animagine-xl-4.0/5.webp"
     ]
 }
