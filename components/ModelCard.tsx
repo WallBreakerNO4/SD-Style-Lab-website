@@ -59,9 +59,9 @@ export function ModelCard({ model }: ModelCardProps) {
           />
         </div>
         <CardTitle className="pt-4">{model.title}</CardTitle>
-        <Badge variant="secondary" className="w-fit mt-1">
+        {/* <Badge variant="secondary" className="w-fit mt-1">
           {model.model_name}
-        </Badge>
+        </Badge> */}
         <div className="pt-2">
           <p className="line-clamp-3 text-sm text-muted-foreground">
             {model.description.zh_CN}
