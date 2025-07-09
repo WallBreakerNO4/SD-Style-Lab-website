@@ -47,18 +47,18 @@ interface ModelCardProps {
 
 export function ModelCard({ model }: ModelCardProps) {
   return (
-    <Card key={model.model_name} className="flex flex-col">
-      <CardHeader>
-        <div className="aspect-video relative w-full">
-          <Image
-            src={model.cover_image}
-            alt={`Cover image for ${model.title}`}
-            fill
-            className="object-cover rounded-t-lg"
-            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          />
-        </div>
-        <CardTitle className="pt-4">{model.title}</CardTitle>
+    <Card key={model.model_name} className="flex flex-col p-0 gap-0">
+      <div className="aspect-[4/5] relative w-full">
+        <Image
+          src={model.cover_image}
+          alt={`Cover image for ${model.title}`}
+          fill
+          className="object-cover rounded-t-lg"
+          sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+        />
+      </div>
+      <CardHeader className="pt-6">
+        <CardTitle>{model.title}</CardTitle>
         {/* <Badge variant="secondary" className="w-fit mt-1">
           {model.model_name}
         </Badge> */}
@@ -149,7 +149,7 @@ export function ModelCard({ model }: ModelCardProps) {
             </Carousel>
           )}
         </CardContent>
-        <CardFooter className="flex justify-end gap-2 pt-4">
+        <CardFooter className="flex justify-end gap-2 pt-4 pb-6">
           {model.huggingface_url && (
             <Button asChild variant="outline" size="sm">
               <a
