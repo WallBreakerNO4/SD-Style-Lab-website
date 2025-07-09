@@ -2,6 +2,13 @@
 
 import Image from "next/image";
 import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import {
   Card,
   CardContent,
   CardDescription,
@@ -19,6 +26,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator"
 
 interface ModelInfo {
   title: string;
@@ -79,21 +87,33 @@ export function ModelCard({ model }: ModelCardProps) {
           </Dialog>
         </div>
       </CardHeader>
+      {/* <Separator /> */}
       <CardContent className="flex-grow">
         {model.sample_images && model.sample_images.length > 0 && (
-          <div className="grid grid-cols-3 gap-2">
-            {model.sample_images.slice(0, 6).map((img, index) => (
-              <div key={index} className="aspect-square relative">
-                <Image
-                  src={img}
-                  alt={`Sample image ${index + 1} for ${model.title}`}
-                  fill
-                  className="object-cover rounded-md"
-                  sizes="10vw"
-                />
-              </div>
-            ))}
-          </div>
+          <Carousel
+            opts={{
+              align: "start",
+            }}
+            className="w-full relative"
+          >
+            <CarouselContent className="-ml-1">
+              {model.sample_images.map((img, index) => (
+                <CarouselItem key={index} className="basis-11/30 pl-1">
+                  <div className="aspect-[3/4] relative">
+                    <Image
+                      src={img}
+                      alt={`Sample image ${index + 1} for ${model.title}`}
+                      fill
+                      className="object-cover rounded-md"
+                      sizes="15vw"
+                    />
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="absolute left-1 top-1/2 -translate-y-1/2" />
+            <CarouselNext className="absolute right-1 top-1/2 -translate-y-1/2" />
+          </Carousel>
         )}
       </CardContent>
       <CardFooter className="flex justify-end gap-2 pt-4">
