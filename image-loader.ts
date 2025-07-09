@@ -10,8 +10,6 @@ export default function cloudflareImageResizingLoader({
   width: number;
   quality?: number;
 }) {
-  const params = `width=${width},quality=${quality || 75},format=avif`;
-
   // Extract the path from the full source URL.
   // Example: "https://.../path/to/image.png" becomes "/path/to/image.png"
   let imagePath;
@@ -21,6 +19,13 @@ export default function cloudflareImageResizingLoader({
     // If src is not a full URL (e.g., already a path), use it directly.
     imagePath = src;
   }
+
+  // Do not use image resizing for SVGs.
+  if (imagePath.endsWith(".svg")) {
+    return src;
+  }
+
+  const params = `width=${width},quality=${quality || 75},format=avif`;
 
   // Construct the absolute URL for Cloudflare Image Resizing.
   // This will work correctly in both development and production.

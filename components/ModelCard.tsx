@@ -103,8 +103,15 @@ export function ModelCard({ model }: ModelCardProps) {
               href={model.huggingface_url}
               target="_blank"
               rel="noopener noreferrer"
+              className="flex items-center gap-2"
             >
-              Hugging Face
+              <Image
+                src="/huggingface-color.svg"
+                alt="Hugging Face"
+                width={16}
+                height={16}
+              />
+              <span>Hugging Face</span>
             </a>
           </Button>
         )}
@@ -114,8 +121,15 @@ export function ModelCard({ model }: ModelCardProps) {
               href={model.civitai_url}
               target="_blank"
               rel="noopener noreferrer"
+              className="flex items-center gap-2"
             >
-              Civitai
+              <Image
+                src="/civitai-color.svg"
+                alt="Civitai"
+                width={16}
+                height={16}
+              />
+              <span>Civitai</span>
             </a>
           </Button>
         )}
