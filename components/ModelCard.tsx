@@ -118,7 +118,8 @@ export function ModelCard({ model }: ModelCardProps) {
                       </DialogTrigger>
                       <DialogContent
                         showCloseButton={false}
-                        className="bg-transparent border-none shadow-none p-0 w-auto h-auto max-w-[90vw] max-h-[90vh] flex items-center justify-center"
+                        unpadded={true}
+                        className="w-auto h-auto max-w-[90vw] max-h-[90vh] flex items-center justify-center"
                       >
                         <DialogHeader className="sr-only">
                           <DialogTitle>
