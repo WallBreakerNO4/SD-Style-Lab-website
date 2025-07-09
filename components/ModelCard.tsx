@@ -103,16 +103,43 @@ export function ModelCard({ model }: ModelCardProps) {
               <CarouselContent className="-ml-1">
                 {model.sample_images.map((img, index) => (
                   <CarouselItem key={index} className="basis-11/30 pl-1">
-                    <div className="aspect-[3/4] relative">
-                      <Image
-                        src={img}
-                        alt={`Sample image ${index + 1} for ${model.title
-                          }`}
-                        fill
-                        className="object-cover rounded-md"
-                        sizes="15vw"
-                      />
-                    </div>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <div className="aspect-[3/4] relative cursor-pointer">
+                          <Image
+                            src={img}
+                            alt={`Sample image ${index + 1} for ${model.title
+                              }`}
+                            fill
+                            className="object-cover rounded-md"
+                            sizes="15vw"
+                          />
+                        </div>
+                      </DialogTrigger>
+                      <DialogContent
+                        showCloseButton={false}
+                        className="bg-transparent border-none shadow-none p-0 w-auto h-auto max-w-[90vw] max-h-[90vh] flex items-center justify-center"
+                      >
+                        <DialogHeader className="sr-only">
+                          <DialogTitle>
+                            {`Sample image ${index + 1} for ${model.title}`}
+                          </DialogTitle>
+                          <DialogDescription>
+                            A larger view of the sample image.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="relative w-auto h-auto max-w-full max-h-full">
+                          <Image
+                            src={img}
+                            alt={`Sample image ${index + 1} for ${model.title
+                              }`}
+                            width={1920}
+                            height={1080}
+                            className="object-contain w-auto h-auto max-w-full max-h-[85vh]"
+                          />
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                   </CarouselItem>
                 ))}
               </CarouselContent>
