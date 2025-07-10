@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import {
   Carousel,
   CarouselContent,
@@ -47,17 +48,21 @@ interface ModelCardProps {
 export function ModelCard({ model }: ModelCardProps) {
   return (
     <Card key={model.model_name} className="flex flex-col p-0 gap-0">
-      <div className="aspect-[4/5] relative w-full">
-        <Image
-          src={model.cover_image}
-          alt={`Cover image for ${model.title}`}
-          fill
-          className="object-cover rounded-t-lg"
-          sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-        />
-      </div>
+      <Link href={`/model/${model.model_name}`}>
+        <div className="aspect-[4/5] relative w-full">
+          <Image
+            src={model.cover_image}
+            alt={`Cover image for ${model.title}`}
+            fill
+            className="object-cover rounded-t-lg"
+            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          />
+        </div>
+      </Link>
       <CardHeader className="pt-6">
-        <CardTitle>{model.title}</CardTitle>
+        <Link href={`/model/${model.model_name}`}>
+          <CardTitle>{model.title}</CardTitle>
+        </Link>
         {/* <Badge variant="secondary" className="w-fit mt-1">
           {model.model_name}
         </Badge> */}
