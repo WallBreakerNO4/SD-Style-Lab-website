@@ -100,7 +100,7 @@ export function ModelClientPage({ modelData }: ModelClientPageProps) {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 flex flex-col h-screen">
       <div
         ref={headerRef}
         style={isHeaderExpanded ? headerStyle : collapsedHeaderStyle}
@@ -126,7 +126,7 @@ export function ModelClientPage({ modelData }: ModelClientPageProps) {
         </p>
       </div>
 
-      <div className="mt-6">
+      <div className="mt-6 flex-grow flex flex-col">
         {isMobile ? (
           <div className="space-y-4">
             {tableRows.map((row, rowIndex) => (
@@ -145,7 +145,7 @@ export function ModelClientPage({ modelData }: ModelClientPageProps) {
             ))}
           </div>
         ) : (
-          <div>
+          <div className="flex-grow flex flex-col">
             <div className="grid grid-cols-6 gap-4 font-bold mb-2">
               {tableHeaders.map((header, index) => (
                 <div key={index} className="text-center">
@@ -153,49 +153,51 @@ export function ModelClientPage({ modelData }: ModelClientPageProps) {
                 </div>
               ))}
             </div>
-            <VirtuosoGrid
-              style={{ height: "calc(100vh - 200px)" }}
-              totalCount={tableRows.length * tableHeaders.length}
-              components={{
-                List: React.forwardRef<
-                  HTMLDivElement,
-                  { style?: React.CSSProperties; children?: React.ReactNode }
-                >(({ style, children }, ref) => (
-                  <div
-                    ref={ref}
-                    style={style}
-                    className="grid grid-cols-6 gap-4"
-                  >
-                    {children}
-                  </div>
-                )),
-                Item: (props) => <div {...props} />,
-              }}
-              itemContent={(index) => {
-                const numCols = tableHeaders.length || 6;
-                const rowIndex = Math.floor(index / numCols);
-                const colIndex = index % numCols;
-                const row = tableRows[rowIndex];
+            <div className="flex-grow">
+              <VirtuosoGrid
+                style={{ height: "100%" }}
+                totalCount={tableRows.length * tableHeaders.length}
+                components={{
+                  List: React.forwardRef<
+                    HTMLDivElement,
+                    { style?: React.CSSProperties; children?: React.ReactNode }
+                  >(({ style, children }, ref) => (
+                    <div
+                      ref={ref}
+                      style={style}
+                      className="grid grid-cols-6 gap-4"
+                    >
+                      {children}
+                    </div>
+                  )),
+                  Item: (props) => <div {...props} />,
+                }}
+                itemContent={(index) => {
+                  const numCols = tableHeaders.length || 6;
+                  const rowIndex = Math.floor(index / numCols);
+                  const colIndex = index % numCols;
+                  const row = tableRows[rowIndex];
 
-                if (!row) return null;
+                  if (!row) return null;
 
-                const cell = row[colIndex];
+                  const cell = row[colIndex];
 
-                if (colIndex === 0) {
+                  if (colIndex === 0) {
+                    return (
+                      <div className="flex items-center justify-center p-2 font-semibold text-center">
+                        {cell}
+                      </div>
+                    );
+                  }
+
                   return (
-                    <div className="flex items-center justify-center p-2 font-semibold text-center">
-                      {cell}
+                    <div key={cell}>
+                      {renderImageCell(getImageDataByIndex(cell))}
                     </div>
                   );
-                }
-
-                return (
-                  <div key={cell}>
-                    {renderImageCell(getImageDataByIndex(cell))}
-                  </div>
-                );
-              }}
-            />
+                }}
+              />
+            </div>
           </div>
         )}
       </div>
