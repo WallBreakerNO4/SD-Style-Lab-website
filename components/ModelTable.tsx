@@ -155,7 +155,7 @@ export function ModelClientPage({ modelData }: ModelClientPageProps) {
             </div>
             <VirtuosoGrid
               style={{ height: "calc(100vh - 200px)" }}
-              totalCount={tableRows.length}
+              totalCount={tableRows.length * tableHeaders.length}
               components={{
                 List: React.forwardRef<
                   HTMLDivElement,
@@ -169,21 +169,30 @@ export function ModelClientPage({ modelData }: ModelClientPageProps) {
                     {children}
                   </div>
                 )),
-                Item: (props) => <div {...props} className="contents" />,
+                Item: (props) => <div {...props} />,
               }}
               itemContent={(index) => {
-                const row = tableRows[index];
-                return (
-                  <>
+                const numCols = tableHeaders.length || 6;
+                const rowIndex = Math.floor(index / numCols);
+                const colIndex = index % numCols;
+                const row = tableRows[rowIndex];
+
+                if (!row) return null;
+
+                const cell = row[colIndex];
+
+                if (colIndex === 0) {
+                  return (
                     <div className="flex items-center justify-center p-2 font-semibold text-center">
-                      {row[0]}
+                      {cell}
                     </div>
-                    {row.slice(1).map((cell, cellIndex) => (
-                      <div key={cellIndex}>
-                        {renderImageCell(getImageDataByIndex(cell))}
-                      </div>
-                    ))}
-                  </>
+                  );
+                }
+
+                return (
+                  <div key={cell}>
+                    {renderImageCell(getImageDataByIndex(cell))}
+                  </div>
                 );
               }}
             />
