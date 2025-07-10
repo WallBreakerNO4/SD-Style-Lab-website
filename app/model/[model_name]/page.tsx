@@ -45,11 +45,13 @@ async function getModelData(modelName: string): Promise<ModelData | null> {
   }
 }
 
-export default async function ModelPage({
-  params,
-}: {
-  params: { model_name: string };
-}) {
+type ModelPageProps = {
+  params: Promise<{
+    model_name: string;
+  }>;
+};
+
+export default async function ModelPage({ params }: ModelPageProps) {
   const { model_name } = await params;
   const modelData = await getModelData(model_name);
 

@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 interface ImageData {
   index: number;
   image_url: string;
-  parameters: Record<string, any>;
+  parameters: Record<string, unknown>;
   info: string;
 }
 
@@ -40,7 +40,6 @@ export function ModelClientPage({ modelData }: ModelClientPageProps) {
   const { modelInfo, imageData, tableHeaders, tableRows } = modelData;
   const isMobile = useIsMobile();
   const [isHeaderExpanded, setIsHeaderExpanded] = useState(true);
-  const [selectedImage, setSelectedImage] = useState<ImageData | null>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const [headerHeight, setHeaderHeight] = useState(0);
 
@@ -162,15 +161,17 @@ export function ModelClientPage({ modelData }: ModelClientPageProps) {
                   List: React.forwardRef<
                     HTMLDivElement,
                     { style?: React.CSSProperties; children?: React.ReactNode }
-                  >(({ style, children }, ref) => (
-                    <div
-                      ref={ref}
-                      style={style}
-                      className="grid grid-cols-6 gap-4"
-                    >
-                      {children}
-                    </div>
-                  )),
+                  >(function List({ style, children }, ref) {
+                    return (
+                      <div
+                        ref={ref}
+                        style={style}
+                        className="grid grid-cols-6 gap-4"
+                      >
+                        {children}
+                      </div>
+                    );
+                  }),
                   Item: (props) => <div {...props} />,
                 }}
                 itemContent={(index) => {
