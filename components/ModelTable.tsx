@@ -79,7 +79,7 @@ export function ModelClientPage({ modelData }: ModelClientPageProps) {
             alt={`Image ${image.index}`}
             fill
             className="object-cover rounded-md"
-            unoptimized
+          // unoptimized
           />
         </div>
       </ImageDialog>
@@ -157,6 +157,7 @@ export function ModelClientPage({ modelData }: ModelClientPageProps) {
               <VirtuosoGrid
                 style={{ height: "100%" }}
                 totalCount={tableRows.length * tableHeaders.length}
+                overscan={1500}
                 components={{
                   List: React.forwardRef<
                     HTMLDivElement,
