@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { VirtuosoGrid } from "react-virtuoso";
 import { ImageDialog } from "@/components/ImageDialog";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp } from "lucide-react";
@@ -193,11 +194,16 @@ export function ModelClientPage({ modelData }: ModelClientPageProps) {
                     return (
                       <div
                         className={cn(
-                          "flex items-center justify-center p-2 font-semibold text-center h-full",
+                          "flex items-center justify-center p-2 h-full",
                           rowBg
                         )}
                       >
-                        {cell}
+                        <Badge
+                          variant="outline"
+                          className="whitespace-normal text-center text-sm font-semibold"
+                        >
+                          {cell}
+                        </Badge>
                       </div>
                     );
                   }
