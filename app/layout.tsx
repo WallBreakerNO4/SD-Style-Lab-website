@@ -15,6 +15,25 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Stable Diffusion 风格实验室",
   description: "用于对比各个 Stable Diffusion 模型画风的实验室",
+  icons: {
+    icon: "/favicon/favicon.ico",
+    shortcut: "/favicon/favicon.ico",
+    apple: "/favicon/apple-touch-icon.png",
+    other: [
+      {
+        rel: "icon",
+        url: "/favicon/favicon.svg",
+        type: "image/svg+xml",
+      },
+      {
+        rel: "icon",
+        url: "/favicon/favicon-96x96.png",
+        sizes: "96x96",
+        type: "image/png",
+      },
+    ],
+  },
+  manifest: "/favicon/site.webmanifest",
 };
 
 export default function RootLayout({
