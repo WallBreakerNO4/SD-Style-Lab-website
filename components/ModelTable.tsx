@@ -115,6 +115,14 @@ export function ModelClientPage({
   };
 
 
+  const scrollToTop = () => {
+    if (isMobile) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      virtuosoRef.current?.scrollToIndex({ index: 0, behavior: "smooth" });
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="bg-background pb-4 sticky top-0 z-10">
@@ -168,7 +176,7 @@ export function ModelClientPage({
                 className={cn({ "bg-muted": rowIndex % 2 !== 0 })}
               >
                 <CardHeader>
-                  <CardTitle>{row[0]}</CardTitle>
+                  <CardTitle>{`${rowIndex + 1}. ${row[0]}`}</CardTitle>
                 </CardHeader>
                 <CardContent className="grid grid-cols-2 gap-2">
                   {row.slice(1).map((cell, cellIndex) => (
@@ -226,12 +234,17 @@ export function ModelClientPage({
                           rowBg
                         )}
                       >
-                        <Badge
-                          variant="outline"
-                          className="whitespace-normal text-center text-sm font-semibold"
-                        >
-                          {cell}
-                        </Badge>
+                        <div className="text-center">
+                          <div className="text-muted-foreground text-xs font-medium">
+                            {rowIndex + 1}
+                          </div>
+                          <Badge
+                            variant="outline"
+                            className="whitespace-normal text-center text-sm font-semibold"
+                          >
+                            {cell}
+                          </Badge>
+                        </div>
                       </div>
                     );
                   }
@@ -247,6 +260,16 @@ export function ModelClientPage({
           </div>
         )}
       </div>
+      {isScrolled && (
+        <Button
+          variant="outline"
+          size="icon"
+          className="fixed bottom-8 right-8 z-50 rounded-full"
+          onClick={scrollToTop}
+        >
+          <ChevronUp className="h-4 w-4" />
+        </Button>
+      )}
     </div>
   );
 }
