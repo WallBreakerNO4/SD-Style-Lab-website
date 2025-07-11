@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { VirtuosoGrid, VirtuosoGridHandle } from "react-virtuoso";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Copy, Check } from "lucide-react";
 import { ImageDialog } from "@/components/ImageDialog";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -47,6 +47,16 @@ export function ModelClientPage({
   const virtuosoRef = useRef<VirtuosoGridHandle>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isManuallyExpanded, setIsManuallyExpanded] = useState(false);
+  const [copiedRowIndex, setCopiedRowIndex] = useState<number | null>(null);
+
+  const handleCopy = (text: string, rowIndex: number) => {
+    if (copiedRowIndex === rowIndex) return;
+    navigator.clipboard.writeText(text);
+    setCopiedRowIndex(rowIndex);
+    setTimeout(() => {
+      setCopiedRowIndex(null);
+    }, 2000);
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -238,12 +248,24 @@ export function ModelClientPage({
                           <div className="text-muted-foreground text-xs font-medium">
                             {rowIndex + 1}
                           </div>
-                          <Badge
-                            variant="outline"
-                            className="whitespace-normal text-center text-sm font-semibold"
+                          <div
+                            className="inline-flex items-center group relative cursor-pointer"
+                            onClick={() => handleCopy(cell, rowIndex)}
                           >
-                            {cell}
-                          </Badge>
+                            <Badge
+                              variant="outline"
+                              className="whitespace-normal text-center text-sm font-semibold pr-7"
+                            >
+                              {cell}
+                            </Badge>
+                            <div className="absolute right-0 top-1/2 -translate-y-1/2 h-full w-7 flex items-center justify-center pointer-events-none">
+                              {copiedRowIndex === rowIndex ? (
+                                <Check className="h-4 w-4 text-green-500" />
+                              ) : (
+                                <Copy className="h-4 w-4 opacity-50 group-hover:opacity-100" />
+                              )}
+                            </div>
+                          </div>
                         </div>
                       </div>
                     );
