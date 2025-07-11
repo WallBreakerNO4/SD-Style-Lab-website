@@ -79,7 +79,7 @@ export function ModelClientPage({ modelData }: ModelClientPageProps) {
             alt={`Image ${image.index}`}
             fill
             className="object-cover rounded-md"
-          // unoptimized
+            unoptimized
           />
         </div>
       </ImageDialog>
