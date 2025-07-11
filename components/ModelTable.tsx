@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { VirtuosoGrid } from "react-virtuoso";
+import { VirtuosoGrid, VirtuosoGridHandle } from "react-virtuoso";
 import { ImageDialog } from "@/components/ImageDialog";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -43,6 +43,7 @@ export function ModelClientPage({ modelData }: ModelClientPageProps) {
   const [isHeaderExpanded, setIsHeaderExpanded] = useState(true);
   const headerRef = useRef<HTMLDivElement>(null);
   const [headerHeight, setHeaderHeight] = useState(0);
+  const virtuosoRef = useRef<VirtuosoGridHandle>(null);
 
   useEffect(() => {
     if (headerRef.current) {
@@ -100,7 +101,7 @@ export function ModelClientPage({ modelData }: ModelClientPageProps) {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 flex flex-col h-screen">
+    <div className="container mx-auto px-4 py-8">
       <div
         ref={headerRef}
         style={isHeaderExpanded ? headerStyle : collapsedHeaderStyle}
@@ -126,7 +127,7 @@ export function ModelClientPage({ modelData }: ModelClientPageProps) {
         </p>
       </div>
 
-      <div className="mt-6 flex-grow flex flex-col">
+      <div className="mt-6">
         {isMobile ? (
           <div className="space-y-4">
             {tableRows.map((row, rowIndex) => (
@@ -148,7 +149,7 @@ export function ModelClientPage({ modelData }: ModelClientPageProps) {
             ))}
           </div>
         ) : (
-          <div className="flex-grow flex flex-col">
+          <div>
             <div className="grid grid-cols-6 gap-4 font-bold mb-2">
               {tableHeaders.map((header, index) => (
                 <div key={index} className="text-center">
@@ -156,9 +157,10 @@ export function ModelClientPage({ modelData }: ModelClientPageProps) {
                 </div>
               ))}
             </div>
-            <div className="flex-grow">
+            <div>
               <VirtuosoGrid
-                style={{ height: "100%" }}
+                ref={virtuosoRef}
+                useWindowScroll
                 totalCount={tableRows.length * tableHeaders.length}
                 overscan={1500}
                 components={{
