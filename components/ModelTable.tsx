@@ -129,7 +129,10 @@ export function ModelClientPage({ modelData }: ModelClientPageProps) {
         {isMobile ? (
           <div className="space-y-4">
             {tableRows.map((row, rowIndex) => (
-              <Card key={rowIndex}>
+              <Card
+                key={rowIndex}
+                className={cn({ "bg-muted": rowIndex % 2 !== 0 })}
+              >
                 <CardHeader>
                   <CardTitle>{row[0]}</CardTitle>
                 </CardHeader>
@@ -166,7 +169,7 @@ export function ModelClientPage({ modelData }: ModelClientPageProps) {
                       <div
                         ref={ref}
                         style={style}
-                        className="grid grid-cols-6 gap-4"
+                        className="grid grid-cols-6"
                       >
                         {children}
                       </div>
@@ -183,17 +186,24 @@ export function ModelClientPage({ modelData }: ModelClientPageProps) {
                   if (!row) return null;
 
                   const cell = row[colIndex];
+                  const rowBg =
+                    rowIndex % 2 !== 0 ? "bg-muted" : "bg-transparent";
 
                   if (colIndex === 0) {
                     return (
-                      <div className="flex items-center justify-center p-2 font-semibold text-center">
+                      <div
+                        className={cn(
+                          "flex items-center justify-center p-2 font-semibold text-center h-full",
+                          rowBg
+                        )}
+                      >
                         {cell}
                       </div>
                     );
                   }
 
                   return (
-                    <div key={cell}>
+                    <div className={cn("p-2 h-full", rowBg)}>
                       {renderImageCell(getImageDataByIndex(cell))}
                     </div>
                   );
