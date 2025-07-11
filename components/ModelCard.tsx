@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useRef } from "react";
 import {
   Carousel,
   CarouselContent,
@@ -46,23 +47,44 @@ interface ModelCardProps {
 }
 
 export function ModelCard({ model }: ModelCardProps) {
+  const router = useRouter();
+  const ignoreNextClick = useRef(false);
+
+  const handleCardClick = () => {
+    if (ignoreNextClick.current) {
+      ignoreNextClick.current = false;
+      return;
+    }
+    router.push(`/model/${model.model_name}`);
+  };
+
+  const stopPropagation = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
+  const onOpenChange = (open: boolean) => {
+    if (!open) {
+      ignoreNextClick.current = true;
+    }
+  };
+
   return (
-    <Card key={model.model_name} className="flex flex-col p-0 gap-0">
-      <Link href={`/model/${model.model_name}`}>
-        <div className="aspect-[4/5] relative w-full">
-          <Image
-            src={model.cover_image}
-            alt={`Cover image for ${model.title}`}
-            fill
-            className="object-cover rounded-t-lg"
-            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          />
-        </div>
-      </Link>
+    <Card
+      key={model.model_name}
+      className="flex flex-col p-0 gap-0 cursor-pointer"
+      onClick={handleCardClick}
+    >
+      <div className="aspect-[4/5] relative w-full">
+        <Image
+          src={model.cover_image}
+          alt={`Cover image for ${model.title}`}
+          fill
+          className="object-cover rounded-t-lg"
+          sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+        />
+      </div>
       <CardHeader className="pt-6">
-        <Link href={`/model/${model.model_name}`}>
-          <CardTitle>{model.title}</CardTitle>
-        </Link>
+        <CardTitle>{model.title}</CardTitle>
         {/* <Badge variant="secondary" className="w-fit mt-1">
           {model.model_name}
         </Badge> */}
@@ -70,17 +92,21 @@ export function ModelCard({ model }: ModelCardProps) {
           <p className="line-clamp-3 text-sm text-muted-foreground">
             {model.description.zh_CN}
           </p>
-          <Dialog>
+          <Dialog onOpenChange={onOpenChange}>
             <DialogTrigger asChild>
               <Button
                 variant="link"
                 size="sm"
                 className="h-auto p-0 text-xs"
+                onClick={stopPropagation}
               >
                 查看详情
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[625px]">
+            <DialogContent
+              className="sm:max-w-[625px]"
+              onClick={stopPropagation}
+            >
               <DialogHeader>
                 <DialogTitle>{model.title}</DialogTitle>
                 <DialogDescription className="whitespace-pre-wrap max-h-[70vh] overflow-y-auto">
@@ -107,21 +133,26 @@ export function ModelCard({ model }: ModelCardProps) {
               <CarouselContent className="-ml-1">
                 {model.sample_images.map((img, index) => (
                   <CarouselItem key={index} className="basis-11/30 pl-1">
-                    <ImageDialog
-                      imageUrl={img}
-                      altText={`Sample image ${index + 1} for ${model.title}`}
-                    >
-                      <div className="aspect-[3/4] relative cursor-pointer">
-                        <Image
-                          src={img}
-                          alt={`Sample image ${index + 1} for ${model.title
+                    <div onClick={stopPropagation}>
+                      <Dialog onOpenChange={onOpenChange}>
+                        <ImageDialog
+                          imageUrl={img}
+                          altText={`Sample image ${index + 1} for ${model.title
                             }`}
-                          fill
-                          className="object-cover rounded-md"
-                          sizes="15vw"
-                        />
-                      </div>
-                    </ImageDialog>
+                        >
+                          <div className="aspect-[3/4] relative cursor-pointer">
+                            <Image
+                              src={img}
+                              alt={`Sample image ${index + 1} for ${model.title
+                                }`}
+                              fill
+                              className="object-cover rounded-md"
+                              sizes="15vw"
+                            />
+                          </div>
+                        </ImageDialog>
+                      </Dialog>
+                    </div>
                   </CarouselItem>
                 ))}
               </CarouselContent>
@@ -132,7 +163,7 @@ export function ModelCard({ model }: ModelCardProps) {
         </CardContent>
         <CardFooter className="flex justify-end gap-2 pt-4 pb-6">
           {model.huggingface_url && (
-            <Button asChild variant="outline" size="sm">
+            <Button asChild variant="outline" size="sm" onClick={stopPropagation}>
               <a
                 href={model.huggingface_url}
                 target="_blank"
@@ -151,7 +182,7 @@ export function ModelCard({ model }: ModelCardProps) {
             </Button>
           )}
           {model.civitai_url && (
-            <Button asChild variant="outline" size="sm">
+            <Button asChild variant="outline" size="sm" onClick={stopPropagation}>
               <a
                 href={model.civitai_url}
                 target="_blank"
