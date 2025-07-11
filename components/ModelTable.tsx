@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { VirtuosoGrid, VirtuosoGridHandle } from "react-virtuoso";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { ImageDialog } from "@/components/ImageDialog";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -40,6 +41,22 @@ export function ModelClientPage({ modelData }: ModelClientPageProps) {
   const { modelInfo, imageData, tableHeaders, tableRows } = modelData;
   const isMobile = useIsMobile();
   const virtuosoRef = useRef<VirtuosoGridHandle>(null);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isManuallyExpanded, setIsManuallyExpanded] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrolled = window.scrollY > 20;
+      setIsScrolled(scrolled);
+      if (!scrolled) {
+        setIsManuallyExpanded(false);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
 
   const getImageDataByIndex = (indexStr: string): ImageData | undefined => {
@@ -69,16 +86,49 @@ export function ModelClientPage({ modelData }: ModelClientPageProps) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="bg-background pb-4">
-        <div className="mb-2">
+      <div className="bg-background pb-4 sticky top-0 z-10">
+        <div className="mb-2 flex justify-between items-start">
           <h1 className="text-3xl font-bold">{modelInfo.title}</h1>
+          {isScrolled && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsManuallyExpanded(!isManuallyExpanded)}
+              className="flex items-center"
+            >
+              {isManuallyExpanded ? "收起" : "展开"}
+              {isManuallyExpanded ? (
+                <ChevronUp className="ml-2 h-4 w-4" />
+              ) : (
+                <ChevronDown className="ml-2 h-4 w-4" />
+              )}
+            </Button>
+          )}
         </div>
-        <p className="text-muted-foreground">
-          {modelInfo.description.zh_CN}
-        </p>
+        <div
+          className={cn(
+            "transition-all duration-300 ease-in-out overflow-hidden",
+            !isScrolled || isManuallyExpanded
+              ? "max-h-48 opacity-100"
+              : "max-h-0 opacity-0"
+          )}
+        >
+          <p className="text-muted-foreground">
+            {modelInfo.description.zh_CN}
+          </p>
+        </div>
+        {!isMobile && (
+          <div className="grid grid-cols-6 gap-4 font-bold pt-4 mt-4 border-t border-border">
+            {tableHeaders.map((header, index) => (
+              <div key={index} className="text-center">
+                {header}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
-      <div className="mt-6">
+      <div className="mt-2">
         {isMobile ? (
           <div className="space-y-4">
             {tableRows.map((row, rowIndex) => (
@@ -101,13 +151,6 @@ export function ModelClientPage({ modelData }: ModelClientPageProps) {
           </div>
         ) : (
           <div>
-            <div className="grid grid-cols-6 gap-4 font-bold mb-2">
-              {tableHeaders.map((header, index) => (
-                <div key={index} className="text-center">
-                  {header}
-                </div>
-              ))}
-            </div>
             <div>
               <VirtuosoGrid
                 ref={virtuosoRef}
