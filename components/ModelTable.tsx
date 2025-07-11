@@ -1,13 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import Image from "next/image";
 import { VirtuosoGrid, VirtuosoGridHandle } from "react-virtuoso";
 import { ImageDialog } from "@/components/ImageDialog";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
@@ -40,28 +39,8 @@ interface ModelClientPageProps {
 export function ModelClientPage({ modelData }: ModelClientPageProps) {
   const { modelInfo, imageData, tableHeaders, tableRows } = modelData;
   const isMobile = useIsMobile();
-  const [isHeaderExpanded, setIsHeaderExpanded] = useState(true);
-  const headerRef = useRef<HTMLDivElement>(null);
-  const [headerHeight, setHeaderHeight] = useState(0);
   const virtuosoRef = useRef<VirtuosoGridHandle>(null);
 
-  useEffect(() => {
-    if (headerRef.current) {
-      setHeaderHeight(headerRef.current.offsetHeight);
-    }
-
-    const handleScroll = () => {
-      if (headerRef.current) {
-        const isScrolledPastHeader = window.scrollY > headerRef.current.offsetHeight;
-        if (isHeaderExpanded && isScrolledPastHeader) {
-          setIsHeaderExpanded(false);
-        }
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [isHeaderExpanded]);
 
   const getImageDataByIndex = (indexStr: string): ImageData | undefined => {
     const index = parseInt(indexStr, 10);
@@ -87,42 +66,14 @@ export function ModelClientPage({ modelData }: ModelClientPageProps) {
     );
   };
 
-  const headerStyle: React.CSSProperties = {
-    position: 'sticky',
-    top: 0,
-    zIndex: 10,
-    transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
-  };
-
-  const collapsedHeaderStyle: React.CSSProperties = {
-    ...headerStyle,
-    transform: `translateY(-${headerHeight - 60}px)`,
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-  };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div
-        ref={headerRef}
-        style={isHeaderExpanded ? headerStyle : collapsedHeaderStyle}
-        className="bg-background pb-4"
-      >
-        <div className="flex justify-between items-center mb-2">
+      <div className="bg-background pb-4">
+        <div className="mb-2">
           <h1 className="text-3xl font-bold">{modelInfo.title}</h1>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsHeaderExpanded(!isHeaderExpanded)}
-          >
-            {isHeaderExpanded ? <ChevronUp /> : <ChevronDown />}
-          </Button>
         </div>
-        <p
-          className={cn(
-            "text-muted-foreground transition-opacity duration-300",
-            { "opacity-0 h-0": !isHeaderExpanded }
-          )}
-        >
+        <p className="text-muted-foreground">
           {modelInfo.description.zh_CN}
         </p>
       </div>
