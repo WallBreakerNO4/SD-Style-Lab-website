@@ -59,5 +59,5 @@ export default async function ModelPage({ params }: ModelPageProps) {
     notFound();
   }
 
-  return <ModelClientPage modelData={modelData} />;
+  return <ModelClientPage modelData={modelData} modelName={model_name} />;
 }

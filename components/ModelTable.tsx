@@ -35,9 +35,13 @@ export interface ModelData {
 
 interface ModelClientPageProps {
   modelData: ModelData;
+  modelName: string;
 }
 
-export function ModelClientPage({ modelData }: ModelClientPageProps) {
+export function ModelClientPage({
+  modelData,
+  modelName,
+}: ModelClientPageProps) {
   const { modelInfo, imageData, tableHeaders, tableRows } = modelData;
   const isMobile = useIsMobile();
   const virtuosoRef = useRef<VirtuosoGridHandle>(null);
@@ -58,6 +62,33 @@ export function ModelClientPage({ modelData }: ModelClientPageProps) {
     };
   }, []);
 
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    const storageKey = `scroll-position-${modelName}`;
+    const savedPosition = localStorage.getItem(storageKey);
+    if (savedPosition && virtuosoRef.current) {
+      virtuosoRef.current.scrollToIndex({
+        index: parseInt(savedPosition, 10),
+        align: "start",
+      });
+    }
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [modelName]);
+
+  const handleRangeChange = (range: { startIndex: number; endIndex: number }) => {
+    const storageKey = `scroll-position-${modelName}`;
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => {
+      localStorage.setItem(storageKey, range.startIndex.toString());
+    }, 500);
+  };
 
   const getImageDataByIndex = (indexStr: string): ImageData | undefined => {
     const index = parseInt(indexStr, 10);
@@ -157,6 +188,7 @@ export function ModelClientPage({ modelData }: ModelClientPageProps) {
                 useWindowScroll
                 totalCount={tableRows.length * tableHeaders.length}
                 overscan={1500}
+                rangeChanged={handleRangeChange}
                 components={{
                   List: React.forwardRef<
                     HTMLDivElement,
