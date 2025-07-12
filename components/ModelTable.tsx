@@ -169,7 +169,12 @@ export function ModelClientPage({
           </div>
         </div>
         {!isMobile && (
-          <div className="grid grid-cols-6 gap-2 font-semibold text-sm text-muted-foreground pt-2 mt-2 border-t border-border">
+          <div
+            className="grid gap-2 font-semibold text-sm text-muted-foreground pt-2 mt-2 border-t border-border"
+            style={{
+              gridTemplateColumns: `repeat(${tableHeaders.length}, minmax(0, 1fr))`,
+            }}
+          >
             {tableHeaders.map((header, index) => (
               <div key={index} className="text-center p-2">
                 {header}
@@ -231,8 +236,11 @@ export function ModelClientPage({
                     return (
                       <div
                         ref={ref}
-                        style={style}
-                        className="grid grid-cols-6"
+                        style={{
+                          ...style,
+                          gridTemplateColumns: `repeat(${tableHeaders.length}, minmax(0, 1fr))`,
+                        }}
+                        className="grid"
                       >
                         {children}
                       </div>
@@ -241,7 +249,7 @@ export function ModelClientPage({
                   Item: (props) => <div {...props} />,
                 }}
                 itemContent={(index) => {
-                  const numCols = tableHeaders.length || 6;
+                  const numCols = tableHeaders.length;
                   const rowIndex = Math.floor(index / numCols);
                   const colIndex = index % numCols;
                   const row = tableRows[rowIndex];
