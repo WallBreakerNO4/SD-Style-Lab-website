@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { VirtuosoGrid, VirtuosoGridHandle } from "react-virtuoso";
-import { ChevronDown, ChevronUp, Copy, Check } from "lucide-react";
+import { ChevronDown, ChevronUp, Copy, Check, ArrowLeft } from "lucide-react";
 import { ImageDialog } from "@/components/ImageDialog";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -137,7 +138,16 @@ export function ModelClientPage({
     <div className="container mx-auto px-4 py-6 max-w-7xl">
       <div className="bg-background pb-4 sticky top-0 z-10">
         <div className="mb-4 flex justify-between items-start">
-          <h1 className="text-4xl font-bold tracking-tight">{modelInfo.title}</h1>
+          <div className="flex items-center gap-4">
+            <Link href="/" passHref>
+              <Button variant="outline" size="icon" className="h-12 w-12">
+                <ArrowLeft className="h-6 w-6" />
+              </Button>
+            </Link>
+            <h1 className="text-4xl font-bold tracking-tight">
+              {modelInfo.title}
+            </h1>
+          </div>
           {isScrolled && (
             <Button
               variant="ghost"
