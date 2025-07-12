@@ -31,7 +31,13 @@ async function getModelData(modelName: string): Promise<ModelData | null> {
     });
 
     const tableHeaders = parsedCsv.data[0] || [];
-    const tableRows = parsedCsv.data.slice(1);
+    const tableRows = parsedCsv.data.slice(1).map((row) => {
+      if (row[0]) {
+        // Add a space after each comma that is not already followed by a space.
+        row[0] = row[0].replace(/,(?!\s)/g, ", ");
+      }
+      return row;
+    });
 
     return {
       modelInfo,
@@ -59,5 +65,5 @@ export default async function ModelPage({ params }: ModelPageProps) {
     notFound();
   }
 
-  return <ModelClientPage modelData={modelData} />;
+  return <ModelClientPage modelData={modelData} modelName={model_name} />;
 }

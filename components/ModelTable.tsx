@@ -2,11 +2,13 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { VirtuosoGrid } from "react-virtuoso";
+import Link from "next/link";
+import { VirtuosoGrid, VirtuosoGridHandle } from "react-virtuoso";
+import { ChevronDown, ChevronUp, Copy, Check, ArrowLeft } from "lucide-react";
 import { ImageDialog } from "@/components/ImageDialog";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
@@ -34,32 +36,70 @@ export interface ModelData {
 
 interface ModelClientPageProps {
   modelData: ModelData;
+  modelName: string;
 }
 
-export function ModelClientPage({ modelData }: ModelClientPageProps) {
+export function ModelClientPage({
+  modelData,
+  modelName,
+}: ModelClientPageProps) {
   const { modelInfo, imageData, tableHeaders, tableRows } = modelData;
   const isMobile = useIsMobile();
-  const [isHeaderExpanded, setIsHeaderExpanded] = useState(true);
-  const headerRef = useRef<HTMLDivElement>(null);
-  const [headerHeight, setHeaderHeight] = useState(0);
+  const virtuosoRef = useRef<VirtuosoGridHandle>(null);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isManuallyExpanded, setIsManuallyExpanded] = useState(false);
+  const [copiedRowIndex, setCopiedRowIndex] = useState<number | null>(null);
+
+  const handleCopy = (text: string, rowIndex: number) => {
+    if (copiedRowIndex === rowIndex) return;
+    navigator.clipboard.writeText(text);
+    setCopiedRowIndex(rowIndex);
+    setTimeout(() => {
+      setCopiedRowIndex(null);
+    }, 2000);
+  };
 
   useEffect(() => {
-    if (headerRef.current) {
-      setHeaderHeight(headerRef.current.offsetHeight);
-    }
-
     const handleScroll = () => {
-      if (headerRef.current) {
-        const isScrolledPastHeader = window.scrollY > headerRef.current.offsetHeight;
-        if (isHeaderExpanded && isScrolledPastHeader) {
-          setIsHeaderExpanded(false);
-        }
+      const scrolled = window.scrollY > 20;
+      setIsScrolled(scrolled);
+      if (!scrolled) {
+        setIsManuallyExpanded(false);
       }
     };
-
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [isHeaderExpanded]);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    const storageKey = `scroll-position-${modelName}`;
+    const savedPosition = localStorage.getItem(storageKey);
+    if (savedPosition && virtuosoRef.current) {
+      virtuosoRef.current.scrollToIndex({
+        index: parseInt(savedPosition, 10),
+        align: "start",
+      });
+    }
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [modelName]);
+
+  const handleRangeChange = (range: { startIndex: number; endIndex: number }) => {
+    const storageKey = `scroll-position-${modelName}`;
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => {
+      localStorage.setItem(storageKey, range.startIndex.toString());
+    }, 500);
+  };
 
   const getImageDataByIndex = (indexStr: string): ImageData | undefined => {
     const index = parseInt(indexStr, 10);
@@ -68,16 +108,16 @@ export function ModelClientPage({ modelData }: ModelClientPageProps) {
 
   const renderImageCell = (image: ImageData | undefined) => {
     if (!image) {
-      return <div className="w-full aspect-[13/19] bg-gray-200 rounded-md" />;
+      return null;
     }
     return (
       <ImageDialog imageUrl={image.image_url} altText={`Image ${image.index}`}>
-        <div className="relative w-full aspect-[13/19] cursor-pointer">
+        <div className="relative w-full aspect-[13/19] cursor-pointer overflow-hidden rounded-md group">
           <Image
             src={image.image_url}
             alt={`Image ${image.index}`}
             fill
-            className="object-cover rounded-md"
+            className="object-cover rounded-md transition-transform duration-300 ease-in-out group-hover:scale-105"
           // unoptimized
           />
         </div>
@@ -85,53 +125,99 @@ export function ModelClientPage({ modelData }: ModelClientPageProps) {
     );
   };
 
-  const headerStyle: React.CSSProperties = {
-    position: 'sticky',
-    top: 0,
-    zIndex: 10,
-    transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
-  };
 
-  const collapsedHeaderStyle: React.CSSProperties = {
-    ...headerStyle,
-    transform: `translateY(-${headerHeight - 60}px)`,
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+  const scrollToTop = () => {
+    if (isMobile) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      virtuosoRef.current?.scrollToIndex({ index: 0, behavior: "smooth" });
+    }
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 flex flex-col h-screen">
-      <div
-        ref={headerRef}
-        style={isHeaderExpanded ? headerStyle : collapsedHeaderStyle}
-        className="bg-background pb-4"
-      >
-        <div className="flex justify-between items-center mb-2">
-          <h1 className="text-3xl font-bold">{modelInfo.title}</h1>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsHeaderExpanded(!isHeaderExpanded)}
-          >
-            {isHeaderExpanded ? <ChevronUp /> : <ChevronDown />}
-          </Button>
+    <div className="container mx-auto px-4 py-6 max-w-7xl">
+      <div className="bg-background pb-4 sticky top-0 z-10">
+        <div className="mb-4 flex justify-between items-start">
+          <div className="flex items-center gap-4">
+            <Link href="/" passHref>
+              <Button variant="outline" size="icon" className="h-12 w-12">
+                <ArrowLeft className="h-6 w-6" />
+              </Button>
+            </Link>
+            <h1 className="text-4xl font-bold tracking-tight">
+              {modelInfo.title}
+            </h1>
+          </div>
+          {isScrolled && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsManuallyExpanded(!isManuallyExpanded)}
+              className="flex items-center"
+            >
+              {isManuallyExpanded ? "收起" : "展开"}
+              {isManuallyExpanded ? (
+                <ChevronUp className="ml-2 h-4 w-4" />
+              ) : (
+                <ChevronDown className="ml-2 h-4 w-4" />
+              )}
+            </Button>
+          )}
         </div>
-        <p
+        <div
           className={cn(
-            "text-muted-foreground transition-opacity duration-300",
-            { "opacity-0 h-0": !isHeaderExpanded }
+            "transition-all duration-300 ease-in-out overflow-hidden",
+            !isScrolled || isManuallyExpanded
+              ? "max-h-48 opacity-100"
+              : "max-h-0 opacity-0"
           )}
         >
-          {modelInfo.description.zh_CN}
-        </p>
+          <div className="p-4 bg-muted/50 rounded-lg mt-2">
+            <p className="text-sm text-muted-foreground">
+              {modelInfo.description.zh_CN}
+            </p>
+          </div>
+        </div>
+        {!isMobile && (
+          <div
+            className="grid gap-2 font-semibold text-sm text-muted-foreground pt-2 mt-2 border-t border-border"
+            style={{
+              gridTemplateColumns: `repeat(${tableHeaders.length}, minmax(0, 1fr))`,
+            }}
+          >
+            {tableHeaders.map((header, index) => (
+              <div key={index} className="text-center p-2">
+                {header}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
-      <div className="mt-6 flex-grow flex flex-col">
+      <div className="mt-2">
         {isMobile ? (
           <div className="space-y-4">
             {tableRows.map((row, rowIndex) => (
-              <Card key={rowIndex}>
-                <CardHeader>
-                  <CardTitle>{row[0]}</CardTitle>
+              <Card
+                key={rowIndex}
+                className={cn({ "bg-muted": rowIndex % 2 !== 0 })}
+              >
+                <CardHeader className="flex flex-row items-start justify-between gap-4">
+                  <CardTitle className="text-base font-semibold leading-snug">
+                    {`${rowIndex + 1}. ${row[0]}`}
+                  </CardTitle>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="flex-shrink-0"
+                    onClick={() => handleCopy(row[0], rowIndex)}
+                  >
+                    {copiedRowIndex === rowIndex ? (
+                      <Check className="h-4 w-4 text-green-500" />
+                    ) : (
+                      <Copy className="h-4 w-4 text-muted-foreground" />
+                    )}
+                  </Button>
                 </CardHeader>
                 <CardContent className="grid grid-cols-2 gap-2">
                   {row.slice(1).map((cell, cellIndex) => (
@@ -144,19 +230,14 @@ export function ModelClientPage({ modelData }: ModelClientPageProps) {
             ))}
           </div>
         ) : (
-          <div className="flex-grow flex flex-col">
-            <div className="grid grid-cols-6 gap-4 font-bold mb-2">
-              {tableHeaders.map((header, index) => (
-                <div key={index} className="text-center">
-                  {header}
-                </div>
-              ))}
-            </div>
-            <div className="flex-grow">
+          <div>
+            <div>
               <VirtuosoGrid
-                style={{ height: "100%" }}
+                ref={virtuosoRef}
+                useWindowScroll
                 totalCount={tableRows.length * tableHeaders.length}
                 overscan={1500}
+                rangeChanged={handleRangeChange}
                 components={{
                   List: React.forwardRef<
                     HTMLDivElement,
@@ -165,8 +246,11 @@ export function ModelClientPage({ modelData }: ModelClientPageProps) {
                     return (
                       <div
                         ref={ref}
-                        style={style}
-                        className="grid grid-cols-6 gap-4"
+                        style={{
+                          ...style,
+                          gridTemplateColumns: `repeat(${tableHeaders.length}, minmax(0, 1fr))`,
+                        }}
+                        className="grid"
                       >
                         {children}
                       </div>
@@ -175,7 +259,7 @@ export function ModelClientPage({ modelData }: ModelClientPageProps) {
                   Item: (props) => <div {...props} />,
                 }}
                 itemContent={(index) => {
-                  const numCols = tableHeaders.length || 6;
+                  const numCols = tableHeaders.length;
                   const rowIndex = Math.floor(index / numCols);
                   const colIndex = index % numCols;
                   const row = tableRows[rowIndex];
@@ -183,17 +267,48 @@ export function ModelClientPage({ modelData }: ModelClientPageProps) {
                   if (!row) return null;
 
                   const cell = row[colIndex];
+                  const rowBg =
+                    rowIndex % 2 !== 0 ? "bg-muted" : "bg-transparent";
+                  const borderClass = "border-b border-border";
 
                   if (colIndex === 0) {
                     return (
-                      <div className="flex items-center justify-center p-2 font-semibold text-center">
-                        {cell}
+                      <div
+                        className={cn(
+                          "flex items-center justify-center p-2 h-full",
+                          rowBg,
+                          borderClass
+                        )}
+                      >
+                        <div className="text-center">
+                          <div className="text-muted-foreground text-xs font-medium">
+                            {rowIndex + 1}
+                          </div>
+                          <div
+                            className="inline-flex items-center group relative cursor-pointer"
+                            onClick={() => handleCopy(cell, rowIndex)}
+                          >
+                            <Badge
+                              variant="outline"
+                              className="whitespace-normal text-center text-sm font-semibold pr-7"
+                            >
+                              {cell}
+                            </Badge>
+                            <div className="absolute right-0 top-1/2 -translate-y-1/2 h-full w-7 flex items-center justify-center pointer-events-none">
+                              {copiedRowIndex === rowIndex ? (
+                                <Check className="h-4 w-4 text-green-500" />
+                              ) : (
+                                <Copy className="h-4 w-4 opacity-50 group-hover:opacity-100" />
+                              )}
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     );
                   }
 
                   return (
-                    <div key={cell}>
+                    <div className={cn("p-2 h-full", rowBg, borderClass)}>
                       {renderImageCell(getImageDataByIndex(cell))}
                     </div>
                   );
@@ -203,6 +318,18 @@ export function ModelClientPage({ modelData }: ModelClientPageProps) {
           </div>
         )}
       </div>
+      <Button
+        variant="secondary"
+        size="icon"
+        className={cn(
+          "fixed bottom-8 right-8 z-50 rounded-full transition-opacity duration-300",
+          isScrolled ? "opacity-100" : "opacity-0 pointer-events-none"
+        )}
+        onClick={scrollToTop}
+        aria-label="Scroll to top"
+      >
+        <ChevronUp className="h-4 w-4" />
+      </Button>
     </div>
   );
 }
