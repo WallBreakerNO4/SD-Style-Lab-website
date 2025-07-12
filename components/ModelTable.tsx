@@ -107,17 +107,17 @@ export function ModelClientPage({
 
   const renderImageCell = (image: ImageData | undefined) => {
     if (!image) {
-      return <div className="w-full aspect-[13/19] bg-gray-200 rounded-md" />;
+      return null;
     }
     return (
       <ImageDialog imageUrl={image.image_url} altText={`Image ${image.index}`}>
-        <div className="relative w-full aspect-[13/19] cursor-pointer">
+        <div className="relative w-full aspect-[13/19] cursor-pointer overflow-hidden rounded-md group">
           <Image
             src={image.image_url}
             alt={`Image ${image.index}`}
             fill
-            className="object-cover rounded-md"
-            unoptimized
+            className="object-cover rounded-md transition-transform duration-300 ease-in-out group-hover:scale-105"
+          // unoptimized
           />
         </div>
       </ImageDialog>
@@ -134,10 +134,10 @@ export function ModelClientPage({
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-6 max-w-7xl">
       <div className="bg-background pb-4 sticky top-0 z-10">
-        <div className="mb-2 flex justify-between items-start">
-          <h1 className="text-3xl font-bold">{modelInfo.title}</h1>
+        <div className="mb-4 flex justify-between items-start">
+          <h1 className="text-4xl font-bold tracking-tight">{modelInfo.title}</h1>
           {isScrolled && (
             <Button
               variant="ghost"
@@ -162,14 +162,16 @@ export function ModelClientPage({
               : "max-h-0 opacity-0"
           )}
         >
-          <p className="text-muted-foreground">
-            {modelInfo.description.zh_CN}
-          </p>
+          <div className="p-4 bg-muted/50 rounded-lg mt-2">
+            <p className="text-sm text-muted-foreground">
+              {modelInfo.description.zh_CN}
+            </p>
+          </div>
         </div>
         {!isMobile && (
-          <div className="grid grid-cols-6 gap-4 font-bold pt-4 mt-4 border-t border-border">
+          <div className="grid grid-cols-6 gap-2 font-semibold text-sm text-muted-foreground pt-2 mt-2 border-t border-border">
             {tableHeaders.map((header, index) => (
-              <div key={index} className="text-center">
+              <div key={index} className="text-center p-2">
                 {header}
               </div>
             ))}
@@ -185,8 +187,22 @@ export function ModelClientPage({
                 key={rowIndex}
                 className={cn({ "bg-muted": rowIndex % 2 !== 0 })}
               >
-                <CardHeader>
-                  <CardTitle>{`${rowIndex + 1}. ${row[0]}`}</CardTitle>
+                <CardHeader className="flex flex-row items-start justify-between gap-4">
+                  <CardTitle className="text-base font-semibold leading-snug">
+                    {`${rowIndex + 1}. ${row[0]}`}
+                  </CardTitle>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="flex-shrink-0"
+                    onClick={() => handleCopy(row[0], rowIndex)}
+                  >
+                    {copiedRowIndex === rowIndex ? (
+                      <Check className="h-4 w-4 text-green-500" />
+                    ) : (
+                      <Copy className="h-4 w-4 text-muted-foreground" />
+                    )}
+                  </Button>
                 </CardHeader>
                 <CardContent className="grid grid-cols-2 gap-2">
                   {row.slice(1).map((cell, cellIndex) => (
@@ -235,13 +251,15 @@ export function ModelClientPage({
                   const cell = row[colIndex];
                   const rowBg =
                     rowIndex % 2 !== 0 ? "bg-muted" : "bg-transparent";
+                  const borderClass = "border-b border-border";
 
                   if (colIndex === 0) {
                     return (
                       <div
                         className={cn(
                           "flex items-center justify-center p-2 h-full",
-                          rowBg
+                          rowBg,
+                          borderClass
                         )}
                       >
                         <div className="text-center">
@@ -272,7 +290,7 @@ export function ModelClientPage({
                   }
 
                   return (
-                    <div className={cn("p-2 h-full", rowBg)}>
+                    <div className={cn("p-2 h-full", rowBg, borderClass)}>
                       {renderImageCell(getImageDataByIndex(cell))}
                     </div>
                   );
@@ -282,16 +300,18 @@ export function ModelClientPage({
           </div>
         )}
       </div>
-      {isScrolled && (
-        <Button
-          variant="outline"
-          size="icon"
-          className="fixed bottom-8 right-8 z-50 rounded-full"
-          onClick={scrollToTop}
-        >
-          <ChevronUp className="h-4 w-4" />
-        </Button>
-      )}
+      <Button
+        variant="secondary"
+        size="icon"
+        className={cn(
+          "fixed bottom-8 right-8 z-50 rounded-full transition-opacity duration-300",
+          isScrolled ? "opacity-100" : "opacity-0 pointer-events-none"
+        )}
+        onClick={scrollToTop}
+        aria-label="Scroll to top"
+      >
+        <ChevronUp className="h-4 w-4" />
+      </Button>
     </div>
   );
 }
