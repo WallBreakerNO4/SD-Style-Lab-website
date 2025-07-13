@@ -118,7 +118,7 @@ export function ModelClientPage({
             alt={`Image ${image.index}`}
             fill
             className="object-cover rounded-md transition-transform duration-300 ease-in-out group-hover:scale-105"
-          // unoptimized
+            unoptimized
           />
         </div>
       </ImageDialog>
