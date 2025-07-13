@@ -1,13 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { VirtuosoGrid, VirtuosoGridHandle } from "react-virtuoso";
 import { ChevronDown, ChevronUp, ArrowLeft } from "lucide-react";
 import { ImageDialog } from "@/components/ImageDialog";
 import { CopyBadge, CopyButton } from "@/components/CopyButton";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -40,6 +39,11 @@ interface ModelClientPageProps {
   modelName: string;
 }
 
+const ItemContainer = (props: React.HTMLAttributes<HTMLDivElement>) => (
+  <div {...props} />
+);
+ItemContainer.displayName = "ItemContainer";
+
 export function ModelClientPage({
   modelData,
   modelName,
@@ -49,6 +53,32 @@ export function ModelClientPage({
   const virtuosoRef = useRef<VirtuosoGridHandle>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isManuallyExpanded, setIsManuallyExpanded] = useState(false);
+  const gridComponents = useMemo(() => {
+    const ListContainer = React.forwardRef<
+      HTMLDivElement,
+      { style?: React.CSSProperties; children?: React.ReactNode }
+    >(function List({ style, children }, ref) {
+      return (
+        <div
+          ref={ref}
+          style={{
+            ...style,
+            gridTemplateColumns: `repeat(${tableHeaders.length}, minmax(0, 1fr))`,
+          }}
+          className="grid"
+        >
+          {children}
+        </div>
+      );
+    });
+    ListContainer.displayName = "ListContainer";
+
+    return {
+      List: ListContainer,
+      Item: ItemContainer,
+    };
+  }, [tableHeaders.length]);
+
   useEffect(() => {
     const handleScroll = () => {
       const scrolled = window.scrollY > 20;
@@ -217,26 +247,7 @@ export function ModelClientPage({
                 totalCount={tableRows.length * tableHeaders.length}
                 overscan={1500}
                 rangeChanged={handleRangeChange}
-                components={{
-                  List: React.forwardRef<
-                    HTMLDivElement,
-                    { style?: React.CSSProperties; children?: React.ReactNode }
-                  >(function List({ style, children }, ref) {
-                    return (
-                      <div
-                        ref={ref}
-                        style={{
-                          ...style,
-                          gridTemplateColumns: `repeat(${tableHeaders.length}, minmax(0, 1fr))`,
-                        }}
-                        className="grid"
-                      >
-                        {children}
-                      </div>
-                    );
-                  }),
-                  Item: (props) => <div {...props} />,
-                }}
+                components={gridComponents}
                 itemContent={(index) => {
                   const numCols = tableHeaders.length;
                   const rowIndex = Math.floor(index / numCols);
