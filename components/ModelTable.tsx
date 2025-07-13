@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { VirtuosoGrid, VirtuosoGridHandle } from "react-virtuoso";
-import { ChevronDown, ChevronUp, Copy, Check, ArrowLeft } from "lucide-react";
+import { ChevronDown, ChevronUp, ArrowLeft } from "lucide-react";
 import { ImageDialog } from "@/components/ImageDialog";
-import { Badge } from "@/components/ui/badge";
+import { CopyBadge, CopyButton } from "@/components/CopyButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -39,6 +39,11 @@ interface ModelClientPageProps {
   modelName: string;
 }
 
+const ItemContainer = (props: React.HTMLAttributes<HTMLDivElement>) => (
+  <div {...props} />
+);
+ItemContainer.displayName = "ItemContainer";
+
 export function ModelClientPage({
   modelData,
   modelName,
@@ -48,16 +53,31 @@ export function ModelClientPage({
   const virtuosoRef = useRef<VirtuosoGridHandle>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isManuallyExpanded, setIsManuallyExpanded] = useState(false);
-  const [copiedRowIndex, setCopiedRowIndex] = useState<number | null>(null);
+  const gridComponents = useMemo(() => {
+    const ListContainer = React.forwardRef<
+      HTMLDivElement,
+      { style?: React.CSSProperties; children?: React.ReactNode }
+    >(function List({ style, children }, ref) {
+      return (
+        <div
+          ref={ref}
+          style={{
+            ...style,
+            gridTemplateColumns: `repeat(${tableHeaders.length}, minmax(0, 1fr))`,
+          }}
+          className="grid"
+        >
+          {children}
+        </div>
+      );
+    });
+    ListContainer.displayName = "ListContainer";
 
-  const handleCopy = (text: string, rowIndex: number) => {
-    if (copiedRowIndex === rowIndex) return;
-    navigator.clipboard.writeText(text);
-    setCopiedRowIndex(rowIndex);
-    setTimeout(() => {
-      setCopiedRowIndex(null);
-    }, 2000);
-  };
+    return {
+      List: ListContainer,
+      Item: ItemContainer,
+    };
+  }, [tableHeaders.length]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -118,7 +138,7 @@ export function ModelClientPage({
             alt={`Image ${image.index}`}
             fill
             className="object-cover rounded-md transition-transform duration-300 ease-in-out group-hover:scale-105"
-          // unoptimized
+            unoptimized
           />
         </div>
       </ImageDialog>
@@ -206,18 +226,7 @@ export function ModelClientPage({
                   <CardTitle className="text-base font-semibold leading-snug">
                     {`${rowIndex + 1}. ${row[0]}`}
                   </CardTitle>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="flex-shrink-0"
-                    onClick={() => handleCopy(row[0], rowIndex)}
-                  >
-                    {copiedRowIndex === rowIndex ? (
-                      <Check className="h-4 w-4 text-green-500" />
-                    ) : (
-                      <Copy className="h-4 w-4 text-muted-foreground" />
-                    )}
-                  </Button>
+                  <CopyButton textToCopy={row[0]} />
                 </CardHeader>
                 <CardContent className="grid grid-cols-2 gap-2">
                   {row.slice(1).map((cell, cellIndex) => (
@@ -238,26 +247,7 @@ export function ModelClientPage({
                 totalCount={tableRows.length * tableHeaders.length}
                 overscan={1500}
                 rangeChanged={handleRangeChange}
-                components={{
-                  List: React.forwardRef<
-                    HTMLDivElement,
-                    { style?: React.CSSProperties; children?: React.ReactNode }
-                  >(function List({ style, children }, ref) {
-                    return (
-                      <div
-                        ref={ref}
-                        style={{
-                          ...style,
-                          gridTemplateColumns: `repeat(${tableHeaders.length}, minmax(0, 1fr))`,
-                        }}
-                        className="grid"
-                      >
-                        {children}
-                      </div>
-                    );
-                  }),
-                  Item: (props) => <div {...props} />,
-                }}
+                components={gridComponents}
                 itemContent={(index) => {
                   const numCols = tableHeaders.length;
                   const rowIndex = Math.floor(index / numCols);
@@ -284,24 +274,7 @@ export function ModelClientPage({
                           <div className="text-muted-foreground text-xs font-medium">
                             {rowIndex + 1}
                           </div>
-                          <div
-                            className="inline-flex items-center group relative cursor-pointer"
-                            onClick={() => handleCopy(cell, rowIndex)}
-                          >
-                            <Badge
-                              variant="outline"
-                              className="whitespace-normal text-center text-sm font-semibold pr-7"
-                            >
-                              {cell}
-                            </Badge>
-                            <div className="absolute right-0 top-1/2 -translate-y-1/2 h-full w-7 flex items-center justify-center pointer-events-none">
-                              {copiedRowIndex === rowIndex ? (
-                                <Check className="h-4 w-4 text-green-500" />
-                              ) : (
-                                <Copy className="h-4 w-4 opacity-50 group-hover:opacity-100" />
-                              )}
-                            </div>
-                          </div>
+                          <CopyBadge textToCopy={cell} />
                         </div>
                       </div>
                     );
