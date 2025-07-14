@@ -1,6 +1,11 @@
 import fs from "fs";
 import path from "path";
 import { ModelCard } from "@/components/ModelCard";
+import {
+  AiFillBilibili,
+  AiFillGithub,
+  AiFillBulb,
+} from "react-icons/ai";
 
 interface ModelInfo {
   title: string;
@@ -63,6 +68,48 @@ export default async function Home() {
           </div>
         )}
       </main>
+      <footer className="text-center mt-12 py-4 border-t">
+        <p className="text-sm text-muted-foreground">
+          Created by{" "}
+          <a
+            href="https://blog.wall-breaker-no4.xyz/about/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium underline underline-offset-4"
+          >
+            WallBreakerNO4
+          </a>
+        </p>
+        <div className="flex justify-center gap-6 mt-4">
+          <a
+            href="https://github.com/WallBreakerNO4"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+          >
+            <AiFillGithub className="h-5 w-5" />
+            <span className="text-sm">GitHub</span>
+          </a>
+          <a
+            href="https://blog.wall-breaker-no4.xyz/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+          >
+            <AiFillBulb className="h-5 w-5" />
+            <span className="text-sm">Blog</span>
+          </a>
+          <a
+            href="https://space.bilibili.com/28978056"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+          >
+            <AiFillBilibili className="h-5 w-5" />
+            <span className="text-sm">BiliBili</span>
+          </a>
+        </div>
+      </footer>
     </div>
   );
 }
