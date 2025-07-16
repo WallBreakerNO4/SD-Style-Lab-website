@@ -7,6 +7,9 @@ import {
   AiFillBulb,
 } from "react-icons/ai";
 import { ModeToggle } from "@/components/custom/mode-toggle";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { HelpCircle } from "lucide-react";
 
 interface ModelInfo {
   title: string;
@@ -60,7 +63,13 @@ export default async function Home() {
               探索与发现优秀的 Stable Diffusion 模型
             </p>
           </div>
-          <div className="mt-4 sm:mt-0">
+          <div className="mt-4 sm:mt-0 flex items-center gap-2">
+            <Link href="/faq">
+              <Button variant="ghost" size="sm" className="gap-2">
+                <HelpCircle className="h-4 w-4" />
+                帮助
+              </Button>
+            </Link>
             <ModeToggle />
           </div>
         </header>
@@ -128,6 +137,11 @@ export default async function Home() {
               <AiFillBilibili className="h-5 w-5" />
               <span className="text-sm">BiliBili</span>
             </a>
+          </div>
+          <div className="mt-4">
+            <Link href="/faq" className="text-sm text-primary hover:text-primary/80 transition-colors underline underline-offset-4">
+              常见问题
+            </Link>
           </div>
         </footer>
       </div>
