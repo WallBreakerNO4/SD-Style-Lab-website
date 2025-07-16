@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
-import { ModeToggle } from "@/components/mode-toggle";
+import { ModeToggle } from "@/components/custom/mode-toggle";
 
 interface ImageData {
   index: number;

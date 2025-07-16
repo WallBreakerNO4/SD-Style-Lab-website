@@ -6,7 +6,7 @@ import {
   AiFillGithub,
   AiFillBulb,
 } from "react-icons/ai";
-import { ModeToggle } from "@/components/mode-toggle";
+import { ModeToggle } from "@/components/custom/mode-toggle";
 
 interface ModelInfo {
   title: string;
