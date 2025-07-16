@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import Papa from "papaparse";
-import { ModelClientPage, ModelData } from "@/components/ModelTable";
+import { ModelClientPage, ModelData } from "@/components/custom/ModelTable";
 import { notFound } from "next/navigation";
 
 async function getModelData(modelName: string): Promise<ModelData | null> {

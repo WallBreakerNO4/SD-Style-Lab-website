@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { ModelCard } from "@/components/ModelCard";
+import { ModelCard } from "@/components/custom/ModelCard";
 import {
   AiFillBilibili,
   AiFillGithub,
