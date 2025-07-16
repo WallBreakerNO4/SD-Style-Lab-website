@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { VirtuosoGrid, VirtuosoGridHandle } from "react-virtuoso";
-import { ChevronDown, ChevronUp, ArrowLeft, Sparkles } from "lucide-react";
+import { ChevronUp, ArrowLeft } from "lucide-react";
 import { ImageDialog } from "@/components/custom/ImageDialog";
 import { CopyBadge, CopyButton } from "@/components/custom/CopyButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
