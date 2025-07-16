@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Check, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -13,12 +13,21 @@ interface CopyButtonProps {
 
 export function CopyButton({ textToCopy, className }: CopyButtonProps) {
   const [isCopied, setIsCopied] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleCopy = () => {
     if (isCopied) return;
     navigator.clipboard.writeText(textToCopy);
     setIsCopied(true);
-    setTimeout(() => {
+    timeoutRef.current = setTimeout(() => {
       setIsCopied(false);
     }, 2000);
   };
@@ -45,12 +54,21 @@ interface CopyBadgeProps {
 
 export function CopyBadge({ textToCopy }: CopyBadgeProps) {
   const [isCopied, setIsCopied] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleCopy = () => {
     if (isCopied) return;
     navigator.clipboard.writeText(textToCopy);
     setIsCopied(true);
-    setTimeout(() => {
+    timeoutRef.current = setTimeout(() => {
       setIsCopied(false);
     }, 2000);
   };
