@@ -4,13 +4,14 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { VirtuosoGrid, VirtuosoGridHandle } from "react-virtuoso";
-import { ChevronDown, ChevronUp, ArrowLeft } from "lucide-react";
+import { ChevronDown, ChevronUp, ArrowLeft, Sparkles } from "lucide-react";
 import { ImageDialog } from "@/components/custom/ImageDialog";
 import { CopyBadge, CopyButton } from "@/components/custom/CopyButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
+import { ModeToggle } from "@/components/mode-toggle";
 
 interface ImageData {
   index: number;
@@ -53,6 +54,7 @@ export function ModelClientPage({
   const virtuosoRef = useRef<VirtuosoGridHandle>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isManuallyExpanded, setIsManuallyExpanded] = useState(false);
+
   const gridComponents = useMemo(() => {
     const ListContainer = React.forwardRef<
       HTMLDivElement,
@@ -132,19 +134,19 @@ export function ModelClientPage({
     }
     return (
       <ImageDialog imageUrl={image.image_url} altText={`Image ${image.index}`}>
-        <div className="relative w-full aspect-[13/19] cursor-pointer overflow-hidden rounded-md group">
+        <div className="relative w-full aspect-[13/19] cursor-pointer overflow-hidden rounded-lg group">
           <Image
             src={image.image_url}
             alt={`Image ${image.index}`}
             fill
-            className="object-cover rounded-md transition-transform duration-300 ease-in-out group-hover:scale-105"
+            className="object-cover rounded-lg transition-transform duration-300 ease-in-out group-hover:scale-110"
             unoptimized
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </div>
       </ImageDialog>
     );
   };
-
 
   const scrollToTop = () => {
     if (isMobile) {
@@ -155,154 +157,160 @@ export function ModelClientPage({
   };
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-7xl">
-      <div className="bg-background pb-4 sticky top-0 z-10">
-        <div className="mb-4 flex justify-between items-start">
-          <div className="flex items-center gap-4">
-            <Link href="/" passHref>
-              <Button variant="outline" size="icon" className="h-12 w-12">
-                <ArrowLeft className="h-6 w-6" />
-              </Button>
-            </Link>
-            <h1 className="text-4xl font-bold tracking-tight">
-              {modelInfo.title}
-            </h1>
-          </div>
-          {isScrolled && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsManuallyExpanded(!isManuallyExpanded)}
-              className="flex items-center"
-            >
-              {isManuallyExpanded ? "收起" : "展开"}
-              {isManuallyExpanded ? (
-                <ChevronUp className="ml-2 h-4 w-4" />
-              ) : (
-                <ChevronDown className="ml-2 h-4 w-4" />
-              )}
-            </Button>
-          )}
-        </div>
-        <div
-          className={cn(
-            "transition-all duration-300 ease-in-out overflow-hidden",
-            !isScrolled || isManuallyExpanded
-              ? "max-h-48 opacity-100"
-              : "max-h-0 opacity-0"
-          )}
-        >
-          <div className="p-4 bg-muted/50 rounded-lg mt-2">
-            <p className="text-sm text-muted-foreground">
-              {modelInfo.description.zh_CN}
-            </p>
-          </div>
-        </div>
-        {!isMobile && (
-          <div
-            className="grid gap-2 font-semibold text-sm text-muted-foreground pt-2 mt-2 border-t border-border"
-            style={{
-              gridTemplateColumns: `repeat(${tableHeaders.length}, minmax(0, 1fr))`,
-            }}
-          >
-            {tableHeaders.map((header, index) => (
-              <div key={index} className="text-center p-2">
-                {header}
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted/10">
+      <div className="container mx-auto px-4 py-6 max-w-7xl">
+        <div className="bg-background/80 backdrop-blur-sm pb-4 sticky top-0 z-10 border-b border-border/50">
+          <div className="mb-4 flex justify-between items-start">
+            <div className="flex items-center gap-4">
+              <Link href="/" passHref>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-12 w-12 rounded-full hover:bg-accent/50"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </Button>
+              </Link>
+              <div>
+                <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                  {modelInfo.title}
+                </h1>
+                <p className="text-sm text-muted-foreground mt-1">模型详情与对比</p>
               </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <div className="mt-2">
-        {isMobile ? (
-          <div className="space-y-4">
-            {tableRows.map((row, rowIndex) => (
-              <Card
-                key={rowIndex}
-                className={cn({ "bg-muted": rowIndex % 2 !== 0 })}
-              >
-                <CardHeader className="flex flex-row items-start justify-between gap-4">
-                  <CardTitle className="text-base font-semibold leading-snug">
-                    {`${rowIndex + 1}. ${row[0]}`}
-                  </CardTitle>
-                  <CopyButton textToCopy={row[0]} />
-                </CardHeader>
-                <CardContent className="grid grid-cols-2 gap-2">
-                  {row.slice(1).map((cell, cellIndex) => (
-                    <div key={cellIndex}>
-                      {renderImageCell(getImageDataByIndex(cell))}
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        ) : (
-          <div>
-            <div>
-              <VirtuosoGrid
-                ref={virtuosoRef}
-                useWindowScroll
-                totalCount={tableRows.length * tableHeaders.length}
-                overscan={1500}
-                rangeChanged={handleRangeChange}
-                components={gridComponents}
-                itemContent={(index) => {
-                  const numCols = tableHeaders.length;
-                  const rowIndex = Math.floor(index / numCols);
-                  const colIndex = index % numCols;
-                  const row = tableRows[rowIndex];
-
-                  if (!row) return null;
-
-                  const cell = row[colIndex];
-                  const rowBg =
-                    rowIndex % 2 !== 0 ? "bg-muted" : "bg-transparent";
-                  const borderClass = "border-b border-border";
-
-                  if (colIndex === 0) {
-                    return (
-                      <div
-                        className={cn(
-                          "flex items-center justify-center p-2 h-full",
-                          rowBg,
-                          borderClass
-                        )}
-                      >
-                        <div className="text-center">
-                          <div className="text-muted-foreground text-xs font-medium">
-                            {rowIndex + 1}
-                          </div>
-                          <CopyBadge textToCopy={cell} />
-                        </div>
-                      </div>
-                    );
-                  }
-
-                  return (
-                    <div className={cn("p-2 h-full", rowBg, borderClass)}>
-                      {renderImageCell(getImageDataByIndex(cell))}
-                    </div>
-                  );
-                }}
-              />
+            </div>
+            <div className="flex items-center gap-2">
+              <ModeToggle />
             </div>
           </div>
-        )}
+
+          <div
+            className={cn(
+              "transition-all duration-300 ease-in-out overflow-hidden",
+              !isScrolled || isManuallyExpanded
+                ? "max-h-48 opacity-100"
+                : "max-h-0 opacity-0"
+            )}
+          >
+            <div className="p-4 bg-gradient-to-r from-muted/30 to-muted/10 rounded-xl mt-2 border border-border/50">
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {modelInfo.description.zh_CN}
+              </p>
+            </div>
+          </div>
+
+          {!isMobile && (
+            <div
+              className="grid gap-2 font-semibold text-sm text-muted-foreground pt-3 mt-3 border-t border-border/50"
+              style={{
+                gridTemplateColumns: `repeat(${tableHeaders.length}, minmax(0, 1fr))`,
+              }}
+            >
+              {tableHeaders.map((header, index) => (
+                <div key={index} className="text-center p-2 font-medium">
+                  {header}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="mt-6">
+          {isMobile ? (
+            <div className="space-y-4">
+              {tableRows.map((row, rowIndex) => (
+                <Card
+                  key={rowIndex}
+                  className={cn(
+                    "overflow-hidden transition-all duration-300",
+                    "hover:shadow-lg hover:shadow-primary/5",
+                    rowIndex % 2 !== 0 ? "bg-muted/30" : "bg-card"
+                  )}
+                >
+                  <CardHeader className="flex flex-row items-start justify-between gap-4 pb-3">
+                    <CardTitle className="text-base font-semibold leading-snug">
+                      {`${rowIndex + 1}. ${row[0]}`}
+                    </CardTitle>
+                    <CopyButton textToCopy={row[0]} />
+                  </CardHeader>
+                  <CardContent className="grid grid-cols-2 gap-2 pt-0">
+                    {row.slice(1).map((cell, cellIndex) => (
+                      <div key={cellIndex} className="aspect-[3/4]">
+                        {renderImageCell(getImageDataByIndex(cell))}
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="bg-card/50 backdrop-blur-sm rounded-xl border border-border/50 overflow-hidden">
+              <div>
+                <VirtuosoGrid
+                  ref={virtuosoRef}
+                  useWindowScroll
+                  totalCount={tableRows.length * tableHeaders.length}
+                  overscan={1500}
+                  rangeChanged={handleRangeChange}
+                  components={gridComponents}
+                  itemContent={(index) => {
+                    const numCols = tableHeaders.length;
+                    const rowIndex = Math.floor(index / numCols);
+                    const colIndex = index % numCols;
+                    const row = tableRows[rowIndex];
+
+                    if (!row) return null;
+
+                    const cell = row[colIndex];
+                    const rowBg =
+                      rowIndex % 2 !== 0 ? "bg-muted/20" : "bg-transparent";
+                    const borderClass = "border-b border-border/50";
+
+                    if (colIndex === 0) {
+                      return (
+                        <div
+                          className={cn(
+                            "flex items-center justify-center p-3 h-full",
+                            rowBg,
+                            borderClass
+                          )}
+                        >
+                          <div className="text-center">
+                            <div className="text-muted-foreground text-xs font-medium mb-1">
+                              {rowIndex + 1}
+                            </div>
+                            <CopyBadge textToCopy={cell} />
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div className={cn("p-2 h-full", rowBg, borderClass)}>
+                        {renderImageCell(getImageDataByIndex(cell))}
+                      </div>
+                    );
+                  }}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
+        <Button
+          variant="default"
+          size="icon"
+          className={cn(
+            "fixed bottom-8 right-8 z-50 rounded-full transition-all duration-300 shadow-lg",
+            isScrolled
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-10 pointer-events-none"
+          )}
+          onClick={scrollToTop}
+          aria-label="返回顶部"
+        >
+          <ChevronUp className="h-4 w-4" />
+        </Button>
       </div>
-      <Button
-        variant="secondary"
-        size="icon"
-        className={cn(
-          "fixed bottom-8 right-8 z-50 rounded-full transition-opacity duration-300",
-          isScrolled ? "opacity-100" : "opacity-0 pointer-events-none"
-        )}
-        onClick={scrollToTop}
-        aria-label="Scroll to top"
-      >
-        <ChevronUp className="h-4 w-4" />
-      </Button>
     </div>
   );
 }
