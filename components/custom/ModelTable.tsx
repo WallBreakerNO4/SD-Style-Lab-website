@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { VirtuosoGrid, VirtuosoGridHandle } from "react-virtuoso";
 import { ChevronUp, ArrowLeft } from "lucide-react";
-import { ImageDialog } from "@/components/custom/ImageDialog";
+import { ImageDialog } from "@/components/custom/ModelImageDialog";
 import { CopyBadge, CopyButton } from "@/components/custom/CopyButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -133,7 +133,11 @@ export function ModelClientPage({
       return null;
     }
     return (
-      <ImageDialog imageUrl={image.image_url} altText={`Image ${image.index}`}>
+      <ImageDialog
+        imageUrl={image.image_url}
+        altText={`Image ${image.index}`}
+        imageInfo={image.info}
+      >
         <div className="relative w-full aspect-[13/19] cursor-pointer overflow-hidden rounded-lg group">
           <Image
             src={image.image_url}
