@@ -9,9 +9,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import React, { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
-import { X } from "lucide-react";
+import { Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface ModelImageDialogProps {
@@ -34,31 +40,7 @@ export function ModelImageDialog({ imageUrl, altText, children, imageInfo }: Mod
     }
   }, [isOpen, imageInfo]);
 
-  const InfoPanel = () => {
-    if (!showInfoPanel || typeof window === 'undefined') return null;
-
-    return createPortal(
-      <div className="fixed top-0 right-0 h-full w-96 bg-background/95 backdrop-blur-sm border-l border-border/50 shadow-2xl z-[60] flex flex-col">
-        <div className="flex items-center justify-between p-4 border-b border-border/50">
-          <h3 className="text-lg font-semibold text-foreground">图片信息</h3>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setShowInfoPanel(false)}
-            className="h-8 w-8 rounded-full"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-        <div className="flex-1 overflow-y-auto p-4">
-          <pre className="text-xs whitespace-pre-wrap break-words font-mono text-foreground/90 bg-muted/30 rounded p-3">
-            {imageInfo}
-          </pre>
-        </div>
-      </div>,
-      document.body
-    );
-  };
+  // 移除 createPortal 的 InfoPanel，改用 Sheet 实现
 
   return (
     <>
@@ -69,7 +51,7 @@ export function ModelImageDialog({ imageUrl, altText, children, imageInfo }: Mod
           unpadded={true}
           className="w-auto h-auto max-w-[90vw] max-h-[90vh] flex items-center justify-center p-4"
           style={{
-            marginRight: showInfoPanel ? '192px' : '0', // 为信息面板留出空间 (384px / 2 = 192px)
+            marginRight: showInfoPanel ? '384px' : '0', // 为信息面板留出空间
           }}
         >
           <DialogHeader className="sr-only">
@@ -78,7 +60,7 @@ export function ModelImageDialog({ imageUrl, altText, children, imageInfo }: Mod
               A larger view of the sample image.
             </DialogDescription>
           </DialogHeader>
-          <div className="relative w-auto h-auto max-w-full max-h-[85vh]">
+          <div className="relative flex items-center justify-center w-full h-full">
             <Image
               src={imageUrl}
               alt={altText}
@@ -90,17 +72,33 @@ export function ModelImageDialog({ imageUrl, altText, children, imageInfo }: Mod
             {imageInfo && (
               <Button
                 variant="secondary"
-                size="sm"
-                onClick={() => setShowInfoPanel(!showInfoPanel)}
-                className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm hover:bg-background/90"
+                size="icon"
+                onClick={() => setShowInfoPanel(true)}
+                className="absolute top-4 right-4 z-10 bg-background/80 backdrop-blur-sm hover:bg-background/90"
+                title="查看信息"
               >
-                {showInfoPanel ? '隐藏信息' : '显示信息'}
+                <Info className="h-4 w-4" />
               </Button>
             )}
           </div>
         </DialogContent>
+
+        {/* 右侧信息面板 - 与 DialogContent 平级 */}
+        {imageInfo && (
+          <Sheet open={showInfoPanel} onOpenChange={setShowInfoPanel}>
+            <SheetContent side="right" className="w-96 p-0">
+              <SheetHeader className="p-4 border-b">
+                <SheetTitle>图片信息</SheetTitle>
+              </SheetHeader>
+              <ScrollArea className="h-[calc(100vh-4rem)] p-4">
+                <pre className="text-xs whitespace-pre-wrap break-words font-mono text-foreground/90 bg-muted/30 rounded p-3">
+                  {imageInfo}
+                </pre>
+              </ScrollArea>
+            </SheetContent>
+          </Sheet>
+        )}
       </Dialog>
-      <InfoPanel />
     </>
   );
 }
