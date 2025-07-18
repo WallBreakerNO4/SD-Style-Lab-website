@@ -21,7 +21,7 @@ interface ModelImageDialogProps {
   imageInfo?: string;
 }
 
-export function ImageDialog({ imageUrl, altText, children, imageInfo }: ModelImageDialogProps) {
+export function ModelImageDialog({ imageUrl, altText, children, imageInfo }: ModelImageDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [showInfoPanel, setShowInfoPanel] = useState(false);
 
