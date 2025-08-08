@@ -66,8 +66,8 @@ export default async function Home() {
           <div className="mt-4 sm:mt-0 flex items-center gap-2">
             <Link href="/faq">
               <Button variant="ghost" size="sm" className="gap-2">
+                FAQ
                 <HelpCircle className="h-4 w-4" />
-                帮助
               </Button>
             </Link>
             <ModeToggle />

@@ -12,32 +12,27 @@ import { ChevronLeft, HelpCircle, BookOpen, Sparkles, Users, Zap } from "lucide-
 const faqData = [
   {
     question: "什么是 SD Style Lab？",
-    answer: "SD Style Lab 是一个用于对比和探索各种 Stable Diffusion 模型画风的实验平台。我们收集整理了大量优秀的模型，通过统一的测试图片和提示词，让您能够直观地看到不同模型在相同条件下的表现差异，帮助您找到最适合自己需求的模型。",
+    answer: "SD Style Lab 是一个用于对比和探索各种 Stable Diffusion 模型画风的实验平台。方便您找出想用的模型用什么画师提示词能跑出理想的画风",
     icon: <Sparkles className="h-5 w-5" />,
   },
   {
-    question: "如何使用这个网站？",
-    answer: "使用非常简单！1. 浏览主页上的模型卡片，查看每个模型的简介和示例图片；2. 点击感兴趣的模型卡片，进入详情页面；3. 在详情页面可以看到该模型的多张测试图片，以及常用的提示词和参数设置；4. 通过对比不同模型的相同测试图片，找到最适合您需求的模型。",
-    icon: <BookOpen className="h-5 w-5" />,
-  },
-  {
     question: "测试图片是如何生成的？",
-    answer: "我们使用统一的测试提示词和参数设置，在每个模型上生成相同的测试图片。这样可以确保比较的公平性。测试内容包括：基础人物、动漫风格、写实风格、建筑场景等多种类型，涵盖了日常使用中的常见需求。",
+    answer: "使用统一的测试提示词和各个模型推荐的参数设置，在每个模型上生成相同的测试图片。这样可以确保比较的公平性。",
     icon: <Zap className="h-5 w-5" />,
   },
   {
     question: "如何获取这些模型？",
-    answer: "每个模型详情页面都提供了获取链接。我们主要支持两种获取方式：1. Hugging Face - 适合直接下载模型文件；2. Civitai - 提供详细的模型介绍和社区评价。点击对应的链接即可跳转到相应平台。",
+    answer: "每个模型详情页面都提供了获取链接，点击对应的链接即可跳转到相应平台。",
     icon: <HelpCircle className="h-5 w-5" />,
   },
   {
-    question: "我可以贡献模型吗？",
-    answer: "当然可以！如果您发现了优秀的模型想要分享给大家，可以通过以下方式：1. 在我们的 GitHub 仓库提交 Issue；2. 提供模型的基本信息、测试图片和提示词；3. 我们会验证并整理后添加到平台中。欢迎一起丰富这个实验平台！",
+    question: "我可以贡献模型对比结果吗？",
+    answer: "非常抱歉，目前暂时不支持用户直接贡献模型对比结果。不过您可以在 issue 中推荐模型，我有空就去测试并更新网站",
     icon: <Users className="h-5 w-5" />,
   },
   {
     question: "为什么有些模型显示效果不好？",
-    answer: "模型效果可能受到多种因素影响：1. 提示词质量 - 不同模型对提示词的理解能力不同；2. 参数设置 - 采样步数、CFG值等参数会影响最终效果；3. 模型特点 - 每个模型都有自己的擅长领域；4. 测试条件 - 我们使用的是通用设置，可能不是该模型的最佳配置。建议您在本地环境中进一步调优。",
+    answer: "模型效果可能受到多种因素影响：1. 提示词质量 - 不同模型对提示词的理解能力不同；2. 参数设置 - 采样步数、CFG值等参数会影响最终效果；3. 模型特点 - 每个模型都有自己的擅长领域；建议您在本地环境中进一步调优或者使用模型推荐的设置。",
     icon: <HelpCircle className="h-5 w-5" />,
   },
 ];
@@ -115,22 +110,6 @@ export default function FAQPage() {
                   className="text-sm text-primary hover:text-primary/80 transition-colors underline underline-offset-4"
                 >
                   GitHub Issues
-                </a>
-                <a
-                  href="https://blog.wall-breaker-no4.xyz/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-primary hover:text-primary/80 transition-colors underline underline-offset-4"
-                >
-                  博客留言
-                </a>
-                <a
-                  href="https://space.bilibili.com/28978056"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-primary hover:text-primary/80 transition-colors underline underline-offset-4"
-                >
-                  B站私信
                 </a>
               </div>
             </div>
