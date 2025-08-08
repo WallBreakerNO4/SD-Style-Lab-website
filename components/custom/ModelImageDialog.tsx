@@ -31,14 +31,12 @@ export function ModelImageDialog({ imageUrl, altText, children, imageInfo }: Mod
   const [isOpen, setIsOpen] = useState(false);
   const [showInfoPanel, setShowInfoPanel] = useState(false);
 
-  // 当 Dialog 打开时，如果有图片信息则显示信息面板
+  // 当 Dialog 关闭时，重置信息面板状态
   useEffect(() => {
-    if (isOpen && imageInfo) {
-      setShowInfoPanel(true);
-    } else {
+    if (!isOpen) {
       setShowInfoPanel(false);
     }
-  }, [isOpen, imageInfo]);
+  }, [isOpen]);
 
   // 移除 createPortal 的 InfoPanel，改用 Sheet 实现
 
