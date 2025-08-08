@@ -59,6 +59,7 @@ export function ModelClientPage({
   const [isScrolled, setIsScrolled] = useState(false);
   const [isManuallyExpanded, setIsManuallyExpanded] = useState(false);
   const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
+  const scrollDebounceRef = useRef<NodeJS.Timeout | null>(null);
 
   const gridComponents = useMemo(() => {
     const ListContainer = React.forwardRef<
@@ -88,19 +89,40 @@ export function ModelClientPage({
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrolled = window.scrollY > 20;
-      const headerShouldCollapse = window.scrollY > 200;
-      setIsScrolled(scrolled);
-      setIsHeaderCollapsed(headerShouldCollapse);
-      if (!scrolled) {
-        setIsManuallyExpanded(false);
+      // 清除之前的防抖计时器
+      if (scrollDebounceRef.current) {
+        clearTimeout(scrollDebounceRef.current);
       }
+      
+      // 使用防抖机制，减少状态更新频率
+      scrollDebounceRef.current = setTimeout(() => {
+        const scrollY = window.scrollY;
+        const scrolled = scrollY > 50; // 增加临界值，减少敏感度
+        const headerShouldCollapse = scrollY > 300; // 增大差距，避免冲突
+        
+        setIsScrolled(scrolled);
+        
+        // 只有在非手动展开状态下才自动折叠
+        if (!isManuallyExpanded) {
+          setIsHeaderCollapsed(headerShouldCollapse);
+        }
+        
+        // 重置手动展开状态
+        if (!scrolled) {
+          setIsManuallyExpanded(false);
+          setIsHeaderCollapsed(false);
+        }
+      }, 50); // 50ms 防抖延迟
     };
-    window.addEventListener("scroll", handleScroll);
+    
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", handleScroll);
+      if (scrollDebounceRef.current) {
+        clearTimeout(scrollDebounceRef.current);
+      }
     };
-  }, []);
+  }, [isManuallyExpanded]);
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -269,7 +291,12 @@ export function ModelClientPage({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setIsHeaderCollapsed(!isHeaderCollapsed)}
+                  onClick={() => {
+                    const newCollapsedState = !isHeaderCollapsed;
+                    setIsHeaderCollapsed(newCollapsedState);
+                    // 设置手动展开状态，防止自动折叠覆盖用户操作
+                    setIsManuallyExpanded(!newCollapsedState && window.scrollY > 300);
+                  }}
                   className="h-8 px-2 text-xs"
                 >
                   {isHeaderCollapsed ? "展开" : "收起"}
