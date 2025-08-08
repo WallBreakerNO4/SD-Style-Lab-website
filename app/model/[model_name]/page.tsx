@@ -4,6 +4,44 @@ import Papa from "papaparse";
 import { ModelClientPage, ModelData } from "@/components/custom/ModelTable";
 import { notFound } from "next/navigation";
 
+export async function generateStaticParams() {
+  try {
+    const dataPath = path.join(process.cwd(), "public", "data");
+    const modelDirs = await fs.readdir(dataPath);
+    
+    // Filter only directories and ensure they have required files
+    const validModels: string[] = [];
+    for (const dir of modelDirs) {
+      const dirPath = path.join(dataPath, dir);
+      const stat = await fs.stat(dirPath);
+      if (stat.isDirectory()) {
+        const requiredFiles = ["model_info.json", "sd_style_table.csv", "image_data.json", "common_prompts.csv"];
+        const hasAllFiles = await Promise.all(
+          requiredFiles.map(async (file) => {
+            try {
+              await fs.access(path.join(dirPath, file));
+              return true;
+            } catch {
+              return false;
+            }
+          })
+        );
+        
+        if (hasAllFiles.every(Boolean)) {
+          validModels.push(dir);
+        }
+      }
+    }
+    
+    return validModels.map((modelName) => ({
+      model_name: modelName,
+    }));
+  } catch (error) {
+    console.error("Failed to generate static params:", error);
+    return [];
+  }
+}
+
 async function getModelData(modelName: string): Promise<ModelData | null> {
   try {
     const dataPath = path.join(
