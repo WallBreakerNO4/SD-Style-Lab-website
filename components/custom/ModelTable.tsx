@@ -101,13 +101,22 @@ export function ModelClientPage({
       scrollDebounceRef.current = setTimeout(() => {
         const scrollY = window.scrollY;
         const scrolled = scrollY > 50; // 增加临界值，减少敏感度
-        const headerShouldCollapse = scrollY > 300; // 增大差距，避免冲突
         
         setIsScrolled(scrolled);
         
-        // 只有在非手动展开状态下才自动折叠
+        // 使用滞后逻辑避免抖动：收起阈值 > 展开阈值
+        const COLLAPSE_THRESHOLD = 350; // 收起阈值
+        const EXPAND_THRESHOLD = 200;   // 展开阈值
+        
+        // 只有在非手动展开状态下才自动折叠/展开
         if (!isManuallyExpanded) {
-          setIsHeaderCollapsed(headerShouldCollapse);
+          if (!isHeaderCollapsed && scrollY > COLLAPSE_THRESHOLD) {
+            // 当前是展开状态，滚动超过收起阈值时收起
+            setIsHeaderCollapsed(true);
+          } else if (isHeaderCollapsed && scrollY < EXPAND_THRESHOLD) {
+            // 当前是收起状态，滚动回到展开阈值以下时展开
+            setIsHeaderCollapsed(false);
+          }
         }
         
         // 重置手动展开状态
@@ -125,7 +134,7 @@ export function ModelClientPage({
         clearTimeout(scrollDebounceRef.current);
       }
     };
-  }, [isManuallyExpanded]);
+  }, [isManuallyExpanded, isHeaderCollapsed]);
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -321,7 +330,9 @@ export function ModelClientPage({
                     const newCollapsedState = !isHeaderCollapsed;
                     setIsHeaderCollapsed(newCollapsedState);
                     // 设置手动展开状态，防止自动折叠覆盖用户操作
-                    setIsManuallyExpanded(!newCollapsedState && window.scrollY > 300);
+                    // 使用与滚动逻辑相同的阈值判断
+                    const COLLAPSE_THRESHOLD = 350;
+                    setIsManuallyExpanded(!newCollapsedState && window.scrollY > COLLAPSE_THRESHOLD);
                   }}
                   className="h-8 px-2 text-xs"
                 >
