@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
 import { VirtuosoGrid, VirtuosoGridHandle } from "react-virtuoso";
-import { ChevronUp, ArrowLeft } from "lucide-react";
+import { ChevronUp, ArrowLeft, Copy } from "lucide-react";
 import { ModelImageDialog } from "@/components/custom/ModelImageDialog";
 import { CopyBadge, CopyButton } from "@/components/custom/CopyButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,7 +17,10 @@ import { useRouter } from "next/navigation";
 interface ImageData {
   index: number;
   image_url: string;
-  parameters: Record<string, unknown>;
+  parameters: {
+    prompt?: string;
+    [key: string]: unknown;
+  };
   info: string;
 }
 
@@ -212,6 +215,18 @@ export function ModelClientPage({
     if (!image) {
       return null;
     }
+
+    const handleCopyPrompt = async (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (image.parameters?.prompt) {
+        try {
+          await navigator.clipboard.writeText(image.parameters.prompt);
+        } catch (err) {
+          console.error('Failed to copy prompt:', err);
+        }
+      }
+    };
+
     return (
       <ModelImageDialog
         imageUrl={image.image_url}
@@ -227,6 +242,17 @@ export function ModelClientPage({
             unoptimized
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          
+          {/* Copy button */}
+          {image.parameters?.prompt && (
+            <button
+              onClick={handleCopyPrompt}
+              className="absolute bottom-2 right-2 p-2 bg-black/60 hover:bg-black/80 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 backdrop-blur-sm"
+              title="复制提示词"
+            >
+              <Copy className="h-3 w-3" />
+            </button>
+          )}
         </div>
       </ModelImageDialog>
     );
