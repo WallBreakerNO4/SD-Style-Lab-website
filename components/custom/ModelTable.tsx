@@ -61,6 +61,7 @@ export function ModelClientPage({
   const virtuosoRef = useRef<VirtuosoGridHandle>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isManuallyExpanded, setIsManuallyExpanded] = useState(false);
+  const [isDescriptionCollapsed, setIsDescriptionCollapsed] = useState(false);
   const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
   const scrollDebounceRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -104,17 +105,32 @@ export function ModelClientPage({
         
         setIsScrolled(scrolled);
         
-        // 使用滞后逻辑避免抖动：收起阈值 > 展开阈值
-        const COLLAPSE_THRESHOLD = 350; // 收起阈值
-        const EXPAND_THRESHOLD = 200;   // 展开阈值
+        // 简介部分的滞后逻辑
+        const DESCRIPTION_COLLAPSE_THRESHOLD = 100; // 简介收起阈值
+        const DESCRIPTION_EXPAND_THRESHOLD = 50;    // 简介展开阈值
         
-        // 只有在非手动展开状态下才自动折叠/展开
+        // 只有在非手动展开状态下才自动折叠/展开简介
         if (!isManuallyExpanded) {
-          if (!isHeaderCollapsed && scrollY > COLLAPSE_THRESHOLD) {
-            // 当前是展开状态，滚动超过收起阈值时收起
+          if (!isDescriptionCollapsed && scrollY > DESCRIPTION_COLLAPSE_THRESHOLD) {
+            // 当前是展开状态，滚动超过收起阈值时收起简介
+            setIsDescriptionCollapsed(true);
+          } else if (isDescriptionCollapsed && scrollY < DESCRIPTION_EXPAND_THRESHOLD) {
+            // 当前是收起状态，滚动回到展开阈值以下时展开简介
+            setIsDescriptionCollapsed(false);
+          }
+        }
+        
+        // 列首部分的滞后逻辑：收起阈值 > 展开阈值
+        const HEADER_COLLAPSE_THRESHOLD = 350; // 列首收起阈值
+        const HEADER_EXPAND_THRESHOLD = 200;   // 列首展开阈值
+        
+        // 只有在非手动展开状态下才自动折叠/展开列首
+        if (!isManuallyExpanded) {
+          if (!isHeaderCollapsed && scrollY > HEADER_COLLAPSE_THRESHOLD) {
+            // 当前是展开状态，滚动超过收起阈值时收起列首
             setIsHeaderCollapsed(true);
-          } else if (isHeaderCollapsed && scrollY < EXPAND_THRESHOLD) {
-            // 当前是收起状态，滚动回到展开阈值以下时展开
+          } else if (isHeaderCollapsed && scrollY < HEADER_EXPAND_THRESHOLD) {
+            // 当前是收起状态，滚动回到展开阈值以下时展开列首
             setIsHeaderCollapsed(false);
           }
         }
@@ -122,6 +138,7 @@ export function ModelClientPage({
         // 重置手动展开状态
         if (!scrolled) {
           setIsManuallyExpanded(false);
+          setIsDescriptionCollapsed(false);
           setIsHeaderCollapsed(false);
         }
       }, 50); // 50ms 防抖延迟
@@ -134,7 +151,7 @@ export function ModelClientPage({
         clearTimeout(scrollDebounceRef.current);
       }
     };
-  }, [isManuallyExpanded, isHeaderCollapsed]);
+  }, [isManuallyExpanded, isDescriptionCollapsed, isHeaderCollapsed]);
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -300,7 +317,7 @@ export function ModelClientPage({
           <div
             className={cn(
               "transition-all duration-300 ease-in-out overflow-hidden",
-              !isScrolled || isManuallyExpanded
+              !isDescriptionCollapsed || isManuallyExpanded
                 ? "max-h-48 opacity-100"
                 : "max-h-0 opacity-0"
             )}
@@ -331,8 +348,8 @@ export function ModelClientPage({
                     setIsHeaderCollapsed(newCollapsedState);
                     // 设置手动展开状态，防止自动折叠覆盖用户操作
                     // 使用与滚动逻辑相同的阈值判断
-                    const COLLAPSE_THRESHOLD = 350;
-                    setIsManuallyExpanded(!newCollapsedState && window.scrollY > COLLAPSE_THRESHOLD);
+                    const HEADER_COLLAPSE_THRESHOLD = 350;
+                    setIsManuallyExpanded(!newCollapsedState && window.scrollY > HEADER_COLLAPSE_THRESHOLD);
                   }}
                   className="h-8 px-2 text-xs"
                 >
