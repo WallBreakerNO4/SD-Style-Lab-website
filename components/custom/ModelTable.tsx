@@ -58,6 +58,7 @@ export function ModelClientPage({
   const virtuosoRef = useRef<VirtuosoGridHandle>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isManuallyExpanded, setIsManuallyExpanded] = useState(false);
+  const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
 
   const gridComponents = useMemo(() => {
     const ListContainer = React.forwardRef<
@@ -88,7 +89,9 @@ export function ModelClientPage({
   useEffect(() => {
     const handleScroll = () => {
       const scrolled = window.scrollY > 20;
+      const headerShouldCollapse = window.scrollY > 200;
       setIsScrolled(scrolled);
+      setIsHeaderCollapsed(headerShouldCollapse);
       if (!scrolled) {
         setIsManuallyExpanded(false);
       }
@@ -141,12 +144,12 @@ export function ModelClientPage({
     const badgeVariants = ["default", "secondary", "outline", "destructive"] as const;
 
     return (
-      <div className="flex flex-wrap gap-1 justify-center max-w-full">
+      <div className="flex flex-wrap gap-1.5 justify-center max-w-full">
         {promptOrder.map((category, promptIndex) => {
           let content = "";
 
           if (category === "Style tags") {
-            content = "画师风格";
+            content = "风格（表格行首）";
           } else {
             // Find matching header in CSV
             const csvIndex = headerRow.findIndex(header =>
@@ -172,7 +175,7 @@ export function ModelClientPage({
             <Badge
               key={`${category}-${promptIndex}-${columnIndex || 'all'}`}
               variant={variant}
-              className="text-xs whitespace-normal break-words"
+              className="text-xs whitespace-normal break-words max-w-full leading-tight px-2 py-0.5"
               title={content}
             >
               {content}
@@ -254,19 +257,51 @@ export function ModelClientPage({
 
           {!isMobile && (
             <div
-              className="grid gap-2 font-semibold text-sm text-muted-foreground pt-3 mt-3 border-t border-border/50"
-              style={{
-                gridTemplateColumns: `repeat(${tableHeaders.length}, minmax(0, 1fr))`,
-              }}
+              className={cn(
+                "transition-all duration-300 ease-in-out overflow-hidden",
+                !isHeaderCollapsed
+                  ? "max-h-96 opacity-100"
+                  : "max-h-16 opacity-80"
+              )}
             >
-              {tableHeaders.map((header, index) => (
-                <div key={index} className="text-center p-2 font-medium space-y-2">
-                  <div className="text-xs text-muted-foreground">
-                    {header}
+              <div className="flex items-center justify-between pt-3 mt-3 border-t border-border/50 mb-2">
+                <h3 className="text-sm font-semibold text-foreground">对比列表</h3>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsHeaderCollapsed(!isHeaderCollapsed)}
+                  className="h-8 px-2 text-xs"
+                >
+                  {isHeaderCollapsed ? "展开" : "收起"}
+                  <ChevronUp className={cn("ml-1 h-3 w-3 transition-transform", isHeaderCollapsed && "rotate-180")} />
+                </Button>
+              </div>
+
+              <div
+                className="grid gap-3"
+                style={{
+                  gridTemplateColumns: `repeat(${tableHeaders.length}, minmax(0, 1fr))`,
+                }}
+              >
+                {tableHeaders.map((header, index) => (
+                  <div key={index} className="text-center">
+                    <div className="bg-muted/50 rounded-lg p-3 space-y-2.5 min-h-[100px] flex flex-col">
+                      <div className="text-xs font-semibold text-foreground bg-background/80 rounded px-2 py-1 border">
+                        {header}
+                      </div>
+                      {index === 0 ? (
+                        <div className="flex-1 flex items-center justify-center text-xs text-muted-foreground">
+                          艺术风格提示词
+                        </div>
+                      ) : (
+                        <div className="flex-1">
+                          {renderColumnBadges(index - 1)}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  {index === 0 ? null : renderColumnBadges(index - 1)}
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
         </div>
