@@ -4,10 +4,10 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { ModeToggle } from "@/components/custom/mode-toggle";
+import { PageHeader } from "@/components/custom/page-header";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, HelpCircle, BookOpen, Sparkles, Users, Zap } from "lucide-react";
+import { ChevronLeft, HelpCircle, Sparkles, Users, Zap } from "lucide-react";
 
 const faqData = [
   {
@@ -41,19 +41,14 @@ export default function FAQPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
-          <div>
-            <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              常见问题
-            </h1>
-            <p className="text-muted-foreground mt-2">
-              了解如何使用 SD Style Lab
-            </p>
-          </div>
-          <div className="mt-4 sm:mt-0">
-            <ModeToggle />
-          </div>
-        </header>
+        <PageHeader>
+          <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+            常见问题
+          </h1>
+          <p className="text-muted-foreground mt-2">
+            了解如何使用 SD Style Lab
+          </p>
+        </PageHeader>
 
         <main>
           <div className="mb-8">
@@ -104,7 +99,7 @@ export default function FAQPage() {
               </p>
               <div className="flex flex-wrap gap-4">
                 <a
-                  href="https://github.com/WallBreakerNO4"
+                  href="https://github.com/WallBreakerNO4/sd-style-lab-website/issues"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-primary hover:text-primary/80 transition-colors underline underline-offset-4"

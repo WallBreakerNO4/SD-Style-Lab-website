@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
-import { ModeToggle } from "@/components/custom/mode-toggle";
+import { PageHeader } from "@/components/custom/page-header";
 
 interface ImageData {
   index: number;
@@ -162,28 +162,24 @@ export function ModelClientPage({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/10">
+      <PageHeader />
       <div className="container mx-auto px-4 py-6 max-w-7xl">
         <div className="bg-background/80 backdrop-blur-sm pb-4 sticky top-0 z-10 border-b border-border/50">
-          <div className="mb-4 flex justify-between items-start">
-            <div className="flex items-center gap-4">
-              <Link href="/" passHref>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-12 w-12 rounded-full hover:bg-accent/50"
-                >
-                  <ArrowLeft className="h-5 w-5" />
-                </Button>
-              </Link>
-              <div>
-                <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                  {modelInfo.title}
-                </h1>
-                <p className="text-sm text-muted-foreground mt-1">模型详情与对比</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <ModeToggle />
+          <div className="mb-4 flex items-start gap-4">
+            <Link href="/" passHref>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-12 w-12 rounded-full hover:bg-accent/50"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+            </Link>
+            <div>
+              <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                {modelInfo.title}
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">模型详情与对比</p>
             </div>
           </div>
 

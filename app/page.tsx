@@ -6,10 +6,8 @@ import {
   AiFillGithub,
   AiFillBulb,
 } from "react-icons/ai";
-import { ModeToggle } from "@/components/custom/mode-toggle";
+import { PageHeader } from "@/components/custom/page-header";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { HelpCircle } from "lucide-react";
 
 interface ModelInfo {
   title: string;
@@ -54,25 +52,14 @@ export default async function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
       <div className="container mx-auto px-4 py-8">
-        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
-          <div>
-            <h1 className="text-5xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              SD Style Lab
-            </h1>
-            <p className="text-muted-foreground mt-2 text-lg">
-              探索与发现优秀的 Stable Diffusion 模型
-            </p>
-          </div>
-          <div className="mt-4 sm:mt-0 flex items-center gap-2">
-            <Link href="/faq">
-              <Button variant="ghost" size="sm" className="gap-2">
-                FAQ
-                <HelpCircle className="h-4 w-4" />
-              </Button>
-            </Link>
-            <ModeToggle />
-          </div>
-        </header>
+        <PageHeader>
+          <h1 className="text-5xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+            SD Style Lab
+          </h1>
+          <p className="text-muted-foreground mt-2 text-lg">
+            探索与发现优秀的 Stable Diffusion 模型
+          </p>
+        </PageHeader>
 
         <main>
           {models.length > 0 ? (
