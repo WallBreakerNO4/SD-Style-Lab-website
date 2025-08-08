@@ -8,6 +8,7 @@ import { ModelImageDialog } from "@/components/custom/ModelImageDialog";
 import { CopyBadge, CopyButton } from "@/components/custom/CopyButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/custom/page-header";
@@ -33,6 +34,8 @@ export interface ModelData {
   imageData: ImageData[];
   tableHeaders: string[];
   tableRows: string[][];
+  promptOrder: string[];
+  commonPrompts: string[][];
 }
 
 interface ModelClientPageProps {
@@ -49,7 +52,7 @@ export function ModelClientPage({
   modelData,
   modelName,
 }: ModelClientPageProps) {
-  const { modelInfo, imageData, tableHeaders, tableRows } = modelData;
+  const { modelInfo, imageData, tableHeaders, tableRows, promptOrder, commonPrompts } = modelData;
   const isMobile = useIsMobile();
   const router = useRouter();
   const virtuosoRef = useRef<VirtuosoGridHandle>(null);
@@ -129,6 +132,53 @@ export function ModelClientPage({
     return imageData.find((img) => img.index === index);
   };
 
+  const renderColumnBadges = () => {
+    if (!promptOrder || !commonPrompts || commonPrompts.length === 0) {
+      return null;
+    }
+
+    const headerRow = commonPrompts[0] || []; // CSV header row
+    const firstRowData = commonPrompts[1] || []; // First data row
+    const badgeVariants = ["default", "secondary", "outline", "destructive"] as const;
+    
+    return (
+      <div className="flex flex-wrap gap-1 justify-center max-w-full">
+        {promptOrder.map((category, promptIndex) => {
+          let content = "";
+          
+          if (category === "Style tags") {
+            content = "画师风格";
+          } else {
+            // Find matching header in CSV
+            const csvIndex = headerRow.findIndex(header => 
+              header.trim().toLowerCase() === category.toLowerCase()
+            );
+            if (csvIndex !== -1 && firstRowData[csvIndex]) {
+              content = firstRowData[csvIndex].trim();
+              // Remove trailing comma if present
+              content = content.replace(/,$/, "");
+            }
+          }
+          
+          if (!content) return null;
+          
+          const variant = badgeVariants[promptIndex % badgeVariants.length];
+          
+          return (
+            <Badge
+              key={category}
+              variant={variant}
+              className="text-xs whitespace-normal break-words"
+              title={content}
+            >
+              {content}
+            </Badge>
+          );
+        })}
+      </div>
+    );
+  };
+
   const renderImageCell = (image: ImageData | undefined) => {
     if (!image) {
       return null;
@@ -206,8 +256,11 @@ export function ModelClientPage({
               }}
             >
               {tableHeaders.map((header, index) => (
-                <div key={index} className="text-center p-2 font-medium">
-                  {header}
+                <div key={index} className="text-center p-2 font-medium space-y-2">
+                  <div className="text-xs text-muted-foreground">
+                    {header}
+                  </div>
+                  {renderColumnBadges()}
                 </div>
               ))}
             </div>
@@ -226,11 +279,16 @@ export function ModelClientPage({
                     rowIndex % 2 !== 0 ? "bg-muted/30" : "bg-card"
                   )}
                 >
-                  <CardHeader className="flex flex-row items-start justify-between gap-4 pb-3">
-                    <CardTitle className="text-base font-semibold leading-snug">
-                      {`${rowIndex + 1}. ${row[0]}`}
-                    </CardTitle>
-                    <CopyButton textToCopy={row[0]} />
+                  <CardHeader className="flex flex-col gap-3 pb-3">
+                    <div className="flex flex-row items-start justify-between gap-4">
+                      <CardTitle className="text-base font-semibold leading-snug">
+                        {`${rowIndex + 1}. ${row[0]}`}
+                      </CardTitle>
+                      <CopyButton textToCopy={row[0]} />
+                    </div>
+                    <div className="text-xs">
+                      {renderColumnBadges()}
+                    </div>
                   </CardHeader>
                   <CardContent className="grid grid-cols-2 gap-2 pt-0">
                     {row.slice(1).map((cell, cellIndex) => (
