@@ -132,41 +132,45 @@ export function ModelClientPage({
     return imageData.find((img) => img.index === index);
   };
 
-  const renderColumnBadges = () => {
+  const renderColumnBadges = (columnIndex?: number) => {
     if (!promptOrder || !commonPrompts || commonPrompts.length === 0) {
       return null;
     }
 
     const headerRow = commonPrompts[0] || []; // CSV header row
-    const firstRowData = commonPrompts[1] || []; // First data row
     const badgeVariants = ["default", "secondary", "outline", "destructive"] as const;
-    
+
     return (
       <div className="flex flex-wrap gap-1 justify-center max-w-full">
         {promptOrder.map((category, promptIndex) => {
           let content = "";
-          
+
           if (category === "Style tags") {
             content = "画师风格";
           } else {
             // Find matching header in CSV
-            const csvIndex = headerRow.findIndex(header => 
+            const csvIndex = headerRow.findIndex(header =>
               header.trim().toLowerCase() === category.toLowerCase()
             );
-            if (csvIndex !== -1 && firstRowData[csvIndex]) {
-              content = firstRowData[csvIndex].trim();
-              // Remove trailing comma if present
-              content = content.replace(/,$/, "");
+            if (csvIndex !== -1) {
+              // Get data for specific column (row) and CSV column
+              const dataRowIndex = columnIndex !== undefined ? columnIndex + 1 : 1; // +1 because row 0 is header
+              const dataRow = commonPrompts[dataRowIndex] || [];
+              if (dataRow[csvIndex]) {
+                content = dataRow[csvIndex].trim();
+                // Remove trailing comma if present
+                content = content.replace(/,$/, "");
+              }
             }
           }
-          
+
           if (!content) return null;
-          
+
           const variant = badgeVariants[promptIndex % badgeVariants.length];
-          
+
           return (
             <Badge
-              key={category}
+              key={`${category}-${promptIndex}-${columnIndex || 'all'}`}
               variant={variant}
               className="text-xs whitespace-normal break-words"
               title={content}
@@ -260,7 +264,7 @@ export function ModelClientPage({
                   <div className="text-xs text-muted-foreground">
                     {header}
                   </div>
-                  {renderColumnBadges()}
+                  {index === 0 ? null : renderColumnBadges(index - 1)}
                 </div>
               ))}
             </div>
