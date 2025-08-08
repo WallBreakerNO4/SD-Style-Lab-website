@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { VirtuosoGrid, VirtuosoGridHandle } from "react-virtuoso";
 import { ChevronUp, ArrowLeft } from "lucide-react";
 import { ModelImageDialog } from "@/components/custom/ModelImageDialog";
@@ -12,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/custom/page-header";
+import { useRouter } from "next/navigation";
 
 interface ImageData {
   index: number;
@@ -51,6 +51,7 @@ export function ModelClientPage({
 }: ModelClientPageProps) {
   const { modelInfo, imageData, tableHeaders, tableRows } = modelData;
   const isMobile = useIsMobile();
+  const router = useRouter();
   const virtuosoRef = useRef<VirtuosoGridHandle>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isManuallyExpanded, setIsManuallyExpanded] = useState(false);
@@ -166,15 +167,14 @@ export function ModelClientPage({
       <div className="container mx-auto px-4 py-6 max-w-7xl">
         <div className="bg-background/80 backdrop-blur-sm pb-4 sticky top-0 z-10 border-b border-border/50">
           <div className="mb-4 flex items-start gap-4">
-            <Link href="/" passHref>
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-12 w-12 rounded-full hover:bg-accent/50"
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-            </Link>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-12 w-12 rounded-full hover:bg-accent/50"
+              onClick={() => router.back()}
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
             <div>
               <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
                 {modelInfo.title}

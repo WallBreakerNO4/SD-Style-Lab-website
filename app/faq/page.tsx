@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Accordion,
   AccordionContent,
@@ -5,9 +7,9 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { PageHeader } from "@/components/custom/page-header";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, HelpCircle, Sparkles, Users, Zap } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const faqData = [
   {
@@ -38,6 +40,8 @@ const faqData = [
 ];
 
 export default function FAQPage() {
+  const router = useRouter();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -52,12 +56,15 @@ export default function FAQPage() {
 
         <main>
           <div className="mb-8">
-            <Link href="/">
-              <Button variant="ghost" size="sm" className="gap-2">
-                <ChevronLeft className="h-4 w-4" />
-                返回首页
-              </Button>
-            </Link>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-2"
+              onClick={() => router.back()}
+            >
+              <ChevronLeft className="h-4 w-4" />
+              返回上一页
+            </Button>
           </div>
 
           <div className="space-y-6">
@@ -95,7 +102,7 @@ export default function FAQPage() {
                 还有问题？
               </h3>
               <p className="text-muted-foreground mb-4">
-                如果您在网站上遇到问题，或者有其他建议，欢迎通过以下方式联系我们：
+                如果您在网站上遇到问题，或者有其他建议，欢迎通过以下方式联系我：
               </p>
               <div className="flex flex-wrap gap-4">
                 <a
