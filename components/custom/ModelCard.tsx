@@ -73,35 +73,43 @@ export function ModelCard({ model }: ModelCardProps) {
   return (
     <Card
       key={model.model_name}
-      className="group flex flex-col p-0 gap-0 cursor-pointer overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1 border-border/50"
+      className="group flex flex-col p-0 gap-0 cursor-pointer overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-2 border-border/30 bg-background/50 backdrop-blur-sm hover:bg-background/80 hover:border-primary/30"
       onClick={handleCardClick}
     >
       <div className="aspect-[4/5] relative w-full overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10" />
         <Image
           src={model.cover_image}
           alt={`Cover image for ${model.title}`}
           fill
-          className="object-cover transition-transform duration-500 group-hover:scale-110"
+          className="object-cover transition-all duration-700 group-hover:scale-105 group-hover:brightness-110"
           sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500" />
+        <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-100">
+          <div className="w-8 h-8 rounded-full bg-background/80 backdrop-blur-sm border border-border/50 flex items-center justify-center">
+            <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </div>
+        </div>
       </div>
 
-      <CardHeader className="pt-4 pb-3">
-        <div className="flex items-start justify-between gap-2">
-          <CardTitle className="text-lg font-semibold line-clamp-2">
+      <CardHeader className="pt-5 pb-4 relative">
+        <div className="flex items-start justify-between gap-3">
+          <CardTitle className="text-xl font-bold line-clamp-2 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent group-hover:from-primary group-hover:to-primary/80 transition-all duration-500">
             {model.title}
           </CardTitle>
           <Badge
             variant="secondary"
-            className="text-xs shrink-0 bg-primary/10 text-primary hover:bg-primary/20"
+            className="text-xs shrink-0 bg-gradient-to-r from-primary/15 to-secondary/15 text-primary border-primary/20 hover:from-primary/25 hover:to-secondary/25 transition-all duration-300 backdrop-blur-sm"
           >
             {model.model_name}
           </Badge>
         </div>
 
-        <div className="pt-2">
-          <p className="line-clamp-3 text-sm text-muted-foreground leading-relaxed">
+        <div className="pt-3">
+          <p className="line-clamp-3 text-sm text-muted-foreground leading-relaxed group-hover:text-muted-foreground/90 transition-colors duration-300">
             {model.description.zh_CN}
           </p>
           <Dialog onOpenChange={onOpenChange}>
@@ -109,10 +117,13 @@ export function ModelCard({ model }: ModelCardProps) {
               <Button
                 variant="link"
                 size="sm"
-                className="h-auto p-0 mt-2 text-xs text-primary font-medium"
+                className="h-auto p-0 mt-3 text-xs text-primary font-medium hover:text-primary/80 transition-all duration-300 group/button"
                 onClick={stopPropagation}
               >
-                查看详情 →
+                <span>查看详情</span>
+                <svg className="w-3 h-3 ml-1 transition-transform duration-300 group-hover/button:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
               </Button>
             </DialogTrigger>
             <DialogContent
@@ -131,14 +142,17 @@ export function ModelCard({ model }: ModelCardProps) {
       </CardHeader>
 
       <div className="mt-auto">
-        <div className="px-4">
-          <Separator className="bg-border/50" />
+        <div className="px-5">
+          <Separator className="bg-gradient-to-r from-transparent via-border/60 to-transparent" />
         </div>
 
-        <CardContent className="pt-3 pb-4">
+        <CardContent className="pt-4 pb-5">
           {model.sample_images && model.sample_images.length > 0 && (
             <div>
-              <p className="text-xs text-muted-foreground mb-2">示例图片</p>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-1 h-4 bg-gradient-to-b from-primary to-primary/60 rounded-full" />
+                <p className="text-xs font-medium text-muted-foreground">示例图片</p>
+              </div>
               <Carousel
                 opts={{
                   align: "start",
@@ -154,15 +168,16 @@ export function ModelCard({ model }: ModelCardProps) {
                             imageUrl={img}
                             altText={`Sample image ${index + 1} for ${model.title}`}
                           >
-                            <div className="aspect-[3/4] relative cursor-pointer rounded-md overflow-hidden">
+                            <div className="aspect-[3/4] relative cursor-pointer rounded-lg overflow-hidden group/img border border-border/30">
                               <Image
                                 src={img}
                                 alt={`Sample image ${index + 1} for ${model.title}`}
                                 fill
-                                className="object-cover rounded-md transition-transform duration-300 hover:scale-105"
+                                className="object-cover transition-all duration-500 group-hover/img:scale-110 group-hover/img:brightness-110"
                                 sizes="10vw"
                               />
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 hover:opacity-100 transition-opacity" />
+                              <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-300" />
+                              <div className="absolute inset-0 ring-1 ring-primary/20 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 rounded-lg" />
                             </div>
                           </ImageDialog>
                         </Dialog>
@@ -172,8 +187,8 @@ export function ModelCard({ model }: ModelCardProps) {
                 </CarouselContent>
                 {model.sample_images.length > 3 && (
                   <>
-                    <CarouselPrevious className="absolute -left-2 top-1/2 -translate-y-1/2 h-6 w-6 bg-background/80 backdrop-blur-sm border-border/50" />
-                    <CarouselNext className="absolute -right-2 top-1/2 -translate-y-1/2 h-6 w-6 bg-background/80 backdrop-blur-sm border-border/50" />
+                    <CarouselPrevious className="absolute -left-3 top-1/2 -translate-y-1/2 h-7 w-7 bg-background/90 backdrop-blur-md border-border/30 shadow-lg hover:bg-background hover:border-primary/30 transition-all duration-300" />
+                    <CarouselNext className="absolute -right-3 top-1/2 -translate-y-1/2 h-7 w-7 bg-background/90 backdrop-blur-md border-border/30 shadow-lg hover:bg-background hover:border-primary/30 transition-all duration-300" />
                   </>
                 )}
               </Carousel>
@@ -181,29 +196,30 @@ export function ModelCard({ model }: ModelCardProps) {
           )}
         </CardContent>
 
-        <CardFooter className="flex gap-2 pt-0 pb-4 px-4">
+        <CardFooter className="flex gap-3 pt-0 pb-5 px-5">
           {model.huggingface_url && (
             <Button
               asChild
               variant="ghost"
               size="sm"
               onClick={stopPropagation}
-              className="flex-1 h-8 text-xs bg-primary/5 hover:bg-primary/10"
+              className="flex-1 h-9 text-xs bg-gradient-to-r from-primary/8 to-secondary/8 hover:from-primary/15 hover:to-secondary/15 border border-primary/20 hover:border-primary/30 transition-all duration-300 backdrop-blur-sm"
             >
               <a
                 href={model.huggingface_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2"
+                className="flex items-center justify-center gap-2 group/link"
               >
                 <Image
                   src="/huggingface-color.svg"
                   alt="Hugging Face"
-                  width={14}
-                  height={14}
+                  width={16}
+                  height={16}
                   unoptimized
+                  className="transition-transform duration-300 group-hover/link:scale-110"
                 />
-                <span>Hugging Face</span>
+                <span className="font-medium">Hugging Face</span>
               </a>
             </Button>
           )}
@@ -214,7 +230,7 @@ export function ModelCard({ model }: ModelCardProps) {
               size="sm"
               onClick={stopPropagation}
               className={cn(
-                "flex-1 h-8 text-xs bg-primary/5 hover:bg-primary/10",
+                "flex-1 h-9 text-xs bg-gradient-to-r from-primary/8 to-secondary/8 hover:from-primary/15 hover:to-secondary/15 border border-primary/20 hover:border-primary/30 transition-all duration-300 backdrop-blur-sm",
                 model.huggingface_url && "flex-none"
               )}
             >
@@ -222,16 +238,17 @@ export function ModelCard({ model }: ModelCardProps) {
                 href={model.civitai_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2"
+                className="flex items-center justify-center gap-2 group/link"
               >
                 <Image
                   src="/civitai-color.svg"
                   alt="Civitai"
-                  width={14}
-                  height={14}
+                  width={16}
+                  height={16}
                   unoptimized
+                  className="transition-transform duration-300 group-hover/link:scale-110"
                 />
-                <span>Civitai</span>
+                <span className="font-medium">Civitai</span>
               </a>
             </Button>
           )}
