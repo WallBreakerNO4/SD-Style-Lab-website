@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import Papa from "papaparse";
-import { ModelClientPage, ModelData } from "@/components/ModelTable";
+import { ModelClientPage, ModelData } from "@/components/custom/ModelTable";
 import { notFound } from "next/navigation";
 
 async function getModelData(modelName: string): Promise<ModelData | null> {
@@ -16,11 +16,13 @@ async function getModelData(modelName: string): Promise<ModelData | null> {
     const modelInfoPath = path.join(dataPath, "model_info.json");
     const tablePath = path.join(dataPath, "sd_style_table.csv");
     const imagesPath = path.join(dataPath, "image_data.json");
+    const commonPromptsPath = path.join(dataPath, "common_prompts.csv");
 
-    const [modelInfoStr, tableCsvStr, imagesStr] = await Promise.all([
+    const [modelInfoStr, tableCsvStr, imagesStr, commonPromptsCsvStr] = await Promise.all([
       fs.readFile(modelInfoPath, "utf-8"),
       fs.readFile(tablePath, "utf-8"),
       fs.readFile(imagesPath, "utf-8"),
+      fs.readFile(commonPromptsPath, "utf-8"),
     ]);
 
     const modelInfo = JSON.parse(modelInfoStr);
@@ -39,11 +41,20 @@ async function getModelData(modelName: string): Promise<ModelData | null> {
       return row;
     });
 
+    const parsedCommonPrompts = Papa.parse<string[]>(commonPromptsCsvStr.trim(), {
+      header: false,
+    });
+
+    const promptOrder = modelInfo.prompt_order || [];
+    const commonPrompts = parsedCommonPrompts.data || [];
+
     return {
       modelInfo,
       imageData,
       tableHeaders,
       tableRows,
+      promptOrder,
+      commonPrompts,
     };
   } catch (error) {
     console.error(`Failed to load model data for ${modelName}:`, error);
