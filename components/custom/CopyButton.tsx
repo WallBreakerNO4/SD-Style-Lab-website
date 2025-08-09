@@ -75,12 +75,21 @@ export function CopyBadge({ textToCopy }: CopyBadgeProps) {
 
   return (
     <div
-      className="inline-flex items-center group relative cursor-pointer"
+      className="inline-flex items-center group relative cursor-pointer max-w-full"
       onClick={handleCopy}
+      title={textToCopy}
     >
       <Badge
         variant="outline"
-        className="whitespace-normal text-center text-sm font-semibold pr-7"
+        className="text-center text-sm font-semibold pr-7 max-w-full leading-tight !whitespace-normal"
+        style={{
+          wordBreak: 'break-word',
+          hyphens: 'auto',
+          display: '-webkit-box',
+          WebkitLineClamp: 8,
+          WebkitBoxOrient: 'vertical',
+          overflow: 'hidden'
+        }}
       >
         {textToCopy}
       </Badge>
