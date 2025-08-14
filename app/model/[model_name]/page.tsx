@@ -8,7 +8,7 @@ export async function generateStaticParams() {
   try {
     const dataPath = path.join(process.cwd(), "public", "data");
     const modelDirs = await fs.readdir(dataPath);
-    
+
     // Filter only directories and ensure they have required files
     const validModels: string[] = [];
     for (const dir of modelDirs) {
@@ -26,13 +26,13 @@ export async function generateStaticParams() {
             }
           })
         );
-        
+
         if (hasAllFiles.every(Boolean)) {
           validModels.push(dir);
         }
       }
     }
-    
+
     return validModels.map((modelName) => ({
       model_name: modelName,
     }));

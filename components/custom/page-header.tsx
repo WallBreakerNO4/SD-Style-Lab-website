@@ -30,7 +30,7 @@ export function PageHeader({ children, rightActions }: PageHeaderProps) {
         )}
         <ModeToggle />
       </div>
-      
+
       {/* 页面内容区域 */}
       <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 pr-16">
         <div className="flex-1">

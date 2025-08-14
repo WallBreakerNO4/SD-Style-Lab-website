@@ -97,18 +97,18 @@ export function ModelClientPage({
       if (scrollDebounceRef.current) {
         clearTimeout(scrollDebounceRef.current);
       }
-      
+
       // 使用防抖机制，减少状态更新频率
       scrollDebounceRef.current = setTimeout(() => {
         const scrollY = window.scrollY;
         const scrolled = scrollY > 50; // 增加临界值，减少敏感度
-        
+
         setIsScrolled(scrolled);
-        
+
         // 简介部分的滞后逻辑
         const DESCRIPTION_COLLAPSE_THRESHOLD = 100; // 简介收起阈值
         const DESCRIPTION_EXPAND_THRESHOLD = 50;    // 简介展开阈值
-        
+
         // 只有在非手动展开状态下才自动折叠/展开简介
         if (!isManuallyExpanded) {
           if (!isDescriptionCollapsed && scrollY > DESCRIPTION_COLLAPSE_THRESHOLD) {
@@ -119,11 +119,11 @@ export function ModelClientPage({
             setIsDescriptionCollapsed(false);
           }
         }
-        
+
         // 列首部分的滞后逻辑：收起阈值 > 展开阈值
         const HEADER_COLLAPSE_THRESHOLD = 350; // 列首收起阈值
         const HEADER_EXPAND_THRESHOLD = 200;   // 列首展开阈值
-        
+
         // 只有在非手动展开状态下才自动折叠/展开列首
         if (!isManuallyExpanded) {
           if (!isHeaderCollapsed && scrollY > HEADER_COLLAPSE_THRESHOLD) {
@@ -134,7 +134,7 @@ export function ModelClientPage({
             setIsHeaderCollapsed(false);
           }
         }
-        
+
         // 重置手动展开状态
         if (!scrolled) {
           setIsManuallyExpanded(false);
@@ -143,7 +143,7 @@ export function ModelClientPage({
         }
       }, 50); // 50ms 防抖延迟
     };
-    
+
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", handleScroll);
@@ -268,7 +268,7 @@ export function ModelClientPage({
             unoptimized
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          
+
           {/* Copy button */}
           {image.parameters?.prompt && (
             <button
@@ -359,23 +359,28 @@ export function ModelClientPage({
               </div>
 
               <div
-                className="grid gap-3"
+                className="grid gap-4"
                 style={{
                   gridTemplateColumns: `repeat(${tableHeaders.length}, minmax(0, 1fr))`,
                 }}
               >
                 {tableHeaders.map((header, index) => (
                   <div key={index} className="text-center">
-                    <div className="bg-muted/50 rounded-lg p-3 space-y-2.5 min-h-[100px] flex flex-col">
-                      <div className="text-xs font-semibold text-foreground bg-background/80 rounded px-2 py-1 border">
+                    <div className="relative group bg-gradient-to-br from-card via-card/90 to-muted/40 rounded-2xl p-4 space-y-3 min-h-[120px] flex flex-col border-2 border-transparent transition-all duration-300 hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5">
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                      <div className="relative z-10 text-sm font-bold text-foreground bg-gradient-to-r from-primary/10 to-accent/10 backdrop-blur-sm rounded-lg px-3 py-2 border border-border/30 shadow-sm">
                         {header}
                       </div>
+
                       {index === 0 ? (
-                        <div className="flex-1 flex items-center justify-center text-xs text-muted-foreground">
-                          艺术风格提示词
+                        <div className="relative z-10 flex-1 flex items-center justify-center">
+                          <div className="text-xs font-medium text-muted-foreground/80 bg-background/60 px-3 py-2 rounded-full border border-border/20">
+                            艺术风格提示词
+                          </div>
                         </div>
                       ) : (
-                        <div className="flex-1">
+                        <div className="relative z-10 flex-1">
                           {renderColumnBadges(index - 1)}
                         </div>
                       )}

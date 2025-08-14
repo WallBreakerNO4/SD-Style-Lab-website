@@ -110,7 +110,7 @@ export default async function Home() {
               </a>{" "}
               用心创建
             </p>
-            
+
             <div className="flex justify-center gap-8 mb-6">
               <a
                 href="https://github.com/WallBreakerNO4"
@@ -148,8 +148,8 @@ export default async function Home() {
             </div>
 
             <div className="flex justify-center">
-              <Link 
-                href="/faq" 
+              <Link
+                href="/faq"
                 className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary hover:text-primary/80 transition-all duration-300 rounded-full border border-primary/20 hover:border-primary/40 hover:bg-primary/5 backdrop-blur-sm"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
