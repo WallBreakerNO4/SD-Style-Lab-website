@@ -105,9 +105,9 @@ export function ModelClientPage({
 
         setIsScrolled(scrolled);
 
-        // 简介部分的滞后逻辑
-        const DESCRIPTION_COLLAPSE_THRESHOLD = 100; // 简介收起阈值
-        const DESCRIPTION_EXPAND_THRESHOLD = 50;    // 简介展开阈值
+        // 简介部分的滞后逻辑：增大阈值差距以减少抖动
+        const DESCRIPTION_COLLAPSE_THRESHOLD = 150; // 简介收起阈值
+        const DESCRIPTION_EXPAND_THRESHOLD = 30;     // 简介展开阈值
 
         // 只有在非手动展开状态下才自动折叠/展开简介
         if (!isManuallyExpanded) {
@@ -120,9 +120,9 @@ export function ModelClientPage({
           }
         }
 
-        // 列首部分的滞后逻辑：收起阈值 > 展开阈值
-        const HEADER_COLLAPSE_THRESHOLD = 350; // 列首收起阈值
-        const HEADER_EXPAND_THRESHOLD = 200;   // 列首展开阈值
+        // 列首部分的滞后逻辑：进一步增大阈值差距以减少抖动
+        const HEADER_COLLAPSE_THRESHOLD = 450; // 列首收起阈值
+        const HEADER_EXPAND_THRESHOLD = 150;    // 列首展开阈值
 
         // 只有在非手动展开状态下才自动折叠/展开列首
         if (!isManuallyExpanded) {
@@ -141,7 +141,7 @@ export function ModelClientPage({
           setIsDescriptionCollapsed(false);
           setIsHeaderCollapsed(false);
         }
-      }, 50); // 50ms 防抖延迟
+      }, 100); // 100ms 防抖延迟，减少状态切换频率
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -348,7 +348,7 @@ export function ModelClientPage({
                     setIsHeaderCollapsed(newCollapsedState);
                     // 设置手动展开状态，防止自动折叠覆盖用户操作
                     // 使用与滚动逻辑相同的阈值判断
-                    const HEADER_COLLAPSE_THRESHOLD = 350;
+                    const HEADER_COLLAPSE_THRESHOLD = 450;
                     setIsManuallyExpanded(!newCollapsedState && window.scrollY > HEADER_COLLAPSE_THRESHOLD);
                   }}
                   className="h-8 px-2 text-xs"
