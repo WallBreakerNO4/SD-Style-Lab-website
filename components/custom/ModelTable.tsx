@@ -61,6 +61,7 @@ export function ModelClientPage({
   const virtuosoRef = useRef<VirtuosoGridHandle>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isManuallyExpanded, setIsManuallyExpanded] = useState(false);
+  const [isDescriptionCollapsed, setIsDescriptionCollapsed] = useState(false);
   const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
   const scrollDebounceRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -96,37 +97,53 @@ export function ModelClientPage({
       if (scrollDebounceRef.current) {
         clearTimeout(scrollDebounceRef.current);
       }
-      
+
       // 使用防抖机制，减少状态更新频率
       scrollDebounceRef.current = setTimeout(() => {
         const scrollY = window.scrollY;
         const scrolled = scrollY > 50; // 增加临界值，减少敏感度
-        
+
         setIsScrolled(scrolled);
-        
-        // 使用滞后逻辑避免抖动：收起阈值 > 展开阈值
-        const COLLAPSE_THRESHOLD = 350; // 收起阈值
-        const EXPAND_THRESHOLD = 200;   // 展开阈值
-        
-        // 只有在非手动展开状态下才自动折叠/展开
+
+        // 简介部分的滞后逻辑：增大阈值差距以减少抖动
+        const DESCRIPTION_COLLAPSE_THRESHOLD = 150; // 简介收起阈值
+        const DESCRIPTION_EXPAND_THRESHOLD = 30;     // 简介展开阈值
+
+        // 只有在非手动展开状态下才自动折叠/展开简介
         if (!isManuallyExpanded) {
-          if (!isHeaderCollapsed && scrollY > COLLAPSE_THRESHOLD) {
-            // 当前是展开状态，滚动超过收起阈值时收起
+          if (!isDescriptionCollapsed && scrollY > DESCRIPTION_COLLAPSE_THRESHOLD) {
+            // 当前是展开状态，滚动超过收起阈值时收起简介
+            setIsDescriptionCollapsed(true);
+          } else if (isDescriptionCollapsed && scrollY < DESCRIPTION_EXPAND_THRESHOLD) {
+            // 当前是收起状态，滚动回到展开阈值以下时展开简介
+            setIsDescriptionCollapsed(false);
+          }
+        }
+
+        // 列首部分的滞后逻辑：进一步增大阈值差距以减少抖动
+        const HEADER_COLLAPSE_THRESHOLD = 450; // 列首收起阈值
+        const HEADER_EXPAND_THRESHOLD = 150;    // 列首展开阈值
+
+        // 只有在非手动展开状态下才自动折叠/展开列首
+        if (!isManuallyExpanded) {
+          if (!isHeaderCollapsed && scrollY > HEADER_COLLAPSE_THRESHOLD) {
+            // 当前是展开状态，滚动超过收起阈值时收起列首
             setIsHeaderCollapsed(true);
-          } else if (isHeaderCollapsed && scrollY < EXPAND_THRESHOLD) {
-            // 当前是收起状态，滚动回到展开阈值以下时展开
+          } else if (isHeaderCollapsed && scrollY < HEADER_EXPAND_THRESHOLD) {
+            // 当前是收起状态，滚动回到展开阈值以下时展开列首
             setIsHeaderCollapsed(false);
           }
         }
-        
+
         // 重置手动展开状态
         if (!scrolled) {
           setIsManuallyExpanded(false);
+          setIsDescriptionCollapsed(false);
           setIsHeaderCollapsed(false);
         }
-      }, 50); // 50ms 防抖延迟
+      }, 100); // 100ms 防抖延迟，减少状态切换频率
     };
-    
+
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", handleScroll);
@@ -134,7 +151,7 @@ export function ModelClientPage({
         clearTimeout(scrollDebounceRef.current);
       }
     };
-  }, [isManuallyExpanded, isHeaderCollapsed]);
+  }, [isManuallyExpanded, isDescriptionCollapsed, isHeaderCollapsed]);
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -251,7 +268,7 @@ export function ModelClientPage({
             unoptimized
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          
+
           {/* Copy button */}
           {image.parameters?.prompt && (
             <button
@@ -300,7 +317,7 @@ export function ModelClientPage({
           <div
             className={cn(
               "transition-all duration-300 ease-in-out overflow-hidden",
-              !isScrolled || isManuallyExpanded
+              !isDescriptionCollapsed || isManuallyExpanded
                 ? "max-h-48 opacity-100"
                 : "max-h-0 opacity-0"
             )}
@@ -331,8 +348,8 @@ export function ModelClientPage({
                     setIsHeaderCollapsed(newCollapsedState);
                     // 设置手动展开状态，防止自动折叠覆盖用户操作
                     // 使用与滚动逻辑相同的阈值判断
-                    const COLLAPSE_THRESHOLD = 350;
-                    setIsManuallyExpanded(!newCollapsedState && window.scrollY > COLLAPSE_THRESHOLD);
+                    const HEADER_COLLAPSE_THRESHOLD = 450;
+                    setIsManuallyExpanded(!newCollapsedState && window.scrollY > HEADER_COLLAPSE_THRESHOLD);
                   }}
                   className="h-8 px-2 text-xs"
                 >
@@ -342,23 +359,28 @@ export function ModelClientPage({
               </div>
 
               <div
-                className="grid gap-3"
+                className="grid gap-4"
                 style={{
                   gridTemplateColumns: `repeat(${tableHeaders.length}, minmax(0, 1fr))`,
                 }}
               >
                 {tableHeaders.map((header, index) => (
                   <div key={index} className="text-center">
-                    <div className="bg-muted/50 rounded-lg p-3 space-y-2.5 min-h-[100px] flex flex-col">
-                      <div className="text-xs font-semibold text-foreground bg-background/80 rounded px-2 py-1 border">
+                    <div className="relative group bg-gradient-to-br from-card via-card/90 to-muted/40 rounded-2xl p-4 space-y-3 min-h-[120px] flex flex-col border-2 border-transparent transition-all duration-300 hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5">
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                      <div className="relative z-10 text-sm font-bold text-foreground bg-gradient-to-r from-primary/10 to-accent/10 backdrop-blur-sm rounded-lg px-3 py-2 border border-border/30 shadow-sm">
                         {header}
                       </div>
+
                       {index === 0 ? (
-                        <div className="flex-1 flex items-center justify-center text-xs text-muted-foreground">
-                          艺术风格提示词
+                        <div className="relative z-10 flex-1 flex items-center justify-center">
+                          <div className="text-xs font-medium text-muted-foreground/80 bg-background/60 px-3 py-2 rounded-full border border-border/20">
+                            艺术风格提示词
+                          </div>
                         </div>
                       ) : (
-                        <div className="flex-1">
+                        <div className="relative z-10 flex-1">
                           {renderColumnBadges(index - 1)}
                         </div>
                       )}

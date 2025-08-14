@@ -55,18 +55,18 @@ const formatInfoValue = (key: string, value: unknown): string => {
   if (value === null || value === undefined || value === "") {
     return "N/A";
   }
-  
+
   if (Array.isArray(value)) {
     return value.join(", ");
   }
-  
+
   return String(value);
 };
 
 const getDisplayLabel = (key: string): string => {
   const labelMap: Record<string, string> = {
     prompt: "正向提示词",
-    negative_prompt: "负向提示词", 
+    negative_prompt: "负向提示词",
     steps: "步数",
     cfg_scale: "CFG 缩放",
     seed: "种子",
@@ -80,7 +80,7 @@ const getDisplayLabel = (key: string): string => {
     restore_faces: "面部修复",
     denoising_strength: "降噪强度"
   };
-  
+
   return labelMap[key] || key;
 };
 
@@ -163,7 +163,7 @@ export function ModelImageDialog({ imageUrl, altText, children, imageInfo }: Mod
                     {['prompt', 'negative_prompt', 'steps', 'cfg_scale', 'seed', 'width', 'height', 'sampler_name', 'sd_model_name'].map((key) => {
                       const value = parsedInfo[key];
                       if (value === undefined || value === null || value === "") return null;
-                      
+
                       return (
                         <div key={key} className="space-y-1">
                           <div className="text-sm font-medium text-foreground">
@@ -183,7 +183,7 @@ export function ModelImageDialog({ imageUrl, altText, children, imageInfo }: Mod
                         </div>
                       );
                     })}
-                    
+
                     {/* 其他参数 */}
                     <details className="mt-6">
                       <summary className="text-sm font-medium text-foreground cursor-pointer hover:text-foreground/80">
@@ -195,9 +195,9 @@ export function ModelImageDialog({ imageUrl, altText, children, imageInfo }: Mod
                           if (['prompt', 'negative_prompt', 'steps', 'cfg_scale', 'seed', 'width', 'height', 'sampler_name', 'sd_model_name'].includes(key)) {
                             return null;
                           }
-                          
+
                           if (value === undefined || value === null || value === "") return null;
-                          
+
                           return (
                             <div key={key} className="flex justify-between items-start text-xs">
                               <span className="text-muted-foreground font-medium min-w-0 flex-shrink-0 mr-2">

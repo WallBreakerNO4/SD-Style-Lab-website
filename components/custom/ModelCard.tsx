@@ -73,20 +73,19 @@ export function ModelCard({ model }: ModelCardProps) {
   return (
     <Card
       key={model.model_name}
-      className="group flex flex-col p-0 gap-0 cursor-pointer overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-2 border-border/30 bg-background/50 backdrop-blur-sm hover:bg-background/80 hover:border-primary/30"
+      className="group flex flex-col p-0 gap-0 cursor-pointer overflow-hidden transition-shadow duration-300 hover:shadow-lg border-border/30 bg-background/50 backdrop-blur-sm hover:bg-background/80 hover:border-primary/30"
       onClick={handleCardClick}
     >
       <div className="aspect-[4/5] relative w-full overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10" />
         <Image
           src={model.cover_image}
           alt={`Cover image for ${model.title}`}
           fill
-          className="object-cover transition-all duration-700 group-hover:scale-105 group-hover:brightness-110"
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
           sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500" />
-        <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-100">
+        <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <div className="w-8 h-8 rounded-full bg-background/80 backdrop-blur-sm border border-border/50 flex items-center justify-center">
             <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -97,12 +96,12 @@ export function ModelCard({ model }: ModelCardProps) {
 
       <CardHeader className="pt-5 pb-4 relative">
         <div className="flex items-start justify-between gap-3">
-          <CardTitle className="text-xl font-bold line-clamp-2 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent group-hover:from-primary group-hover:to-primary/80 transition-all duration-500">
+          <CardTitle className="text-xl font-bold line-clamp-2 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent group-hover:from-primary group-hover:to-primary/80 transition-colors duration-300">
             {model.title}
           </CardTitle>
           <Badge
             variant="secondary"
-            className="text-xs shrink-0 bg-gradient-to-r from-primary/15 to-secondary/15 text-primary border-primary/20 hover:from-primary/25 hover:to-secondary/25 transition-all duration-300 backdrop-blur-sm"
+            className="text-xs shrink-0 bg-gradient-to-r from-primary/15 to-secondary/15 text-primary border-primary/20 hover:from-primary/25 hover:to-secondary/25 transition-colors duration-300 backdrop-blur-sm"
           >
             {model.model_name}
           </Badge>
@@ -117,11 +116,11 @@ export function ModelCard({ model }: ModelCardProps) {
               <Button
                 variant="link"
                 size="sm"
-                className="h-auto p-0 mt-3 text-xs text-primary font-medium hover:text-primary/80 transition-all duration-300 group/button"
+                className="h-auto p-0 mt-3 text-xs text-primary font-medium hover:text-primary/80 transition-colors duration-300 group/button"
                 onClick={stopPropagation}
               >
                 <span>查看详情</span>
-                <svg className="w-3 h-3 ml-1 transition-transform duration-300 group-hover/button:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
               </Button>
@@ -173,7 +172,7 @@ export function ModelCard({ model }: ModelCardProps) {
                                 src={img}
                                 alt={`Sample image ${index + 1} for ${model.title}`}
                                 fill
-                                className="object-cover transition-all duration-500 group-hover/img:scale-110 group-hover/img:brightness-110"
+                                className="object-cover transition-transform duration-300 group-hover/img:scale-105"
                                 sizes="10vw"
                               />
                               <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-300" />
@@ -203,7 +202,7 @@ export function ModelCard({ model }: ModelCardProps) {
               variant="ghost"
               size="sm"
               onClick={stopPropagation}
-              className="flex-1 h-9 text-xs bg-gradient-to-r from-primary/8 to-secondary/8 hover:from-primary/15 hover:to-secondary/15 border border-primary/20 hover:border-primary/30 transition-all duration-300 backdrop-blur-sm"
+              className="flex-1 h-9 text-xs bg-gradient-to-r from-primary/8 to-secondary/8 hover:from-primary/15 hover:to-secondary/15 border border-primary/20 hover:border-primary/30 transition-colors duration-300 backdrop-blur-sm"
             >
               <a
                 href={model.huggingface_url}
@@ -217,7 +216,6 @@ export function ModelCard({ model }: ModelCardProps) {
                   width={16}
                   height={16}
                   unoptimized
-                  className="transition-transform duration-300 group-hover/link:scale-110"
                 />
                 <span className="font-medium">Hugging Face</span>
               </a>
@@ -230,7 +228,7 @@ export function ModelCard({ model }: ModelCardProps) {
               size="sm"
               onClick={stopPropagation}
               className={cn(
-                "flex-1 h-9 text-xs bg-gradient-to-r from-primary/8 to-secondary/8 hover:from-primary/15 hover:to-secondary/15 border border-primary/20 hover:border-primary/30 transition-all duration-300 backdrop-blur-sm",
+                "flex-1 h-9 text-xs bg-gradient-to-r from-primary/8 to-secondary/8 hover:from-primary/15 hover:to-secondary/15 border border-primary/20 hover:border-primary/30 transition-colors duration-300 backdrop-blur-sm",
                 model.huggingface_url && "flex-none"
               )}
             >
@@ -246,7 +244,6 @@ export function ModelCard({ model }: ModelCardProps) {
                   width={16}
                   height={16}
                   unoptimized
-                  className="transition-transform duration-300 group-hover/link:scale-110"
                 />
                 <span className="font-medium">Civitai</span>
               </a>
